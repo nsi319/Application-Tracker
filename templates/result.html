@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <h2 style="text-align: center;">SEARCH RESULTS</h2>
+  <br>
+	<title>
+		RESULTS
+	</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+<!--
+<style>
+  ccd .loader {
+    border: 5px solid #ccc;
+    padding: 20px;
+  }
+  .loader_ajax_big {
+    border: 5px solid #f3f3f3 !important;
+    border-radius: 70%;
+    border-top: 5px solid #2D2D2D !important;
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    -webkit-animation: spin_loader_ajax_big 2s linear infinite;
+    animation: spin_loader_ajax_big 2s linear infinite;
+  }
+  
+  @-webkit-keyframes spin_loader_ajax_big {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin_loader_ajax_big {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  
+  .loader_ajax_small {
+    border: 4px solid #f3f3f3 !important;
+    border-radius: 50%;
+    border-top: 4px solid #2D2D2D !important;
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+    -webkit-animation: spin_loader_ajax_small 2s linear infinite;
+    animation: spin_loader_ajax_small 2s linear infinite;
+  }
+  
+  @-webkit-keyframes spin_loader_ajax_small {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+  
+  @keyframes spin_loader_ajax_small {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+</style>
+-->
+<body>
+  <div hidden>
+  <div class="card-body-dup">
+    <h5 class="card-title"><b>Phone:</b> </h5>
+    <h6 class="card-subtitle mb-2 text-muted"><b>Email:</b></h6>
+    <p class="card-text"><b>Linkedin:</b></p>
+    <p class="card-text"><b>Experience:</b></p>
+    <a href="#" class="card-link"><b>Open</b></a>
+  </div>
+  <div id ="resume_list_dup" style="margin-left: 10px;">
+    Skills:<b>[ ]</b>    
+    <br>
+    Experience between<b> [ , ] </b>years
+    <br>
+    Keywords: <b>[ | ]</b>
+    <br>
+    <p>Number of resumes:</p>
+    </div>
+  
+
+  </div>
+  <div class="row">
+    <div class="col-md-4 col-md-30">
+      <h6 style="text-align: center;"><b>Search within results:</b></h6>
+      <br>
+      <form class = "form_search" id="resume_search" action="/result" method="POST">
+        <div class="input_forsearch">
+          <div class="exp_input" style="margin: 10px; border: 5px; border-color: black;">
+            <h6>Keywords: </h6>
+            <div class="form-group" style="margin: 10px;">
+            <label for="any_key">Any of the keywords:</label>
+            <input type="text" class="form-control" name="rany_key" id="any_key" value="" style="float: right; width: auto;"> 
+            </div>
+            <div class="form-group" style="margin: 10px;">
+            <label for="all_key">All the keywords:</label>
+            <input type="text" name="rall_key" class="form-control" id="all_key" value="" style="float: right; width: auto;"> 
+          </div>
+          {% if result %}
+          {% for r in result %}
+          <input type="hidden" name="found_resumes" value="{{r['resume']}}">
+          {% endfor %}
+          {% endif %}  
+          </div>   
+          </div>
+          <br>
+          <div class="button_center" style="text-align: center;">
+          <input type="hidden" name="post" value="search_results">
+          <button class="btn-sm btn-dark" type="submit" onclick="loader()" style="margin-top: 10px;">
+            Find Resumes
+            <span class="spinner-border spinner-border-sm" role="status" id="img" aria-hidden="true" style="visibility: collapse;"></span>
+            </button>
+          </div>
+      </form>
+      </div>
+    <div class="col-md-8 col-md-70 loader" >
+  
+      <p>Resumes matched with:</p> 
+      <div id ="resume_list" style="margin-left: 10px;">
+      {% if skills %}
+      Skills: <b>{{skills}}</b>
+      <br>
+      {% endif %}
+      {% if exp %}
+      Experience between <b>[ {{exp}} ] </b>years
+      <br>
+      {% endif %}
+      {% if key %}
+      Keywords: <b>[ {{key}} ]</b>
+      <br>
+      {% endif %}
+      {% if count %}
+      <p>Number of resumes: <b>{{count}}</b></p>
+      <br>
+      {% endif %}
+      {% if empty %}
+      <p style="float: left;"><b>{{empty}}</b></p>
+      <br>
+      {% endif %}
+      {% if empty_reload %}
+      <div id ="resume_list_dup" style="margin-left: 10px;">
+        Skills: <b>[ ]</b>    
+        <br>
+        Experience between<b> [ , ] </b>years
+        <br>
+        Keywords: <b>[ | ]</b>
+        <br>
+        <p>Number of resumes:</p>
+        </div>    
+      <p style="float: left;"><b>{{empty_reload}}</b></p>
+      <br>
+      {% endif %}
+      </div>
+      {% set count = namespace(v=0) %}
+      {% if items %}
+      {% if result %}
+      {% for r in result %}
+      <div class="card shadow-sm p-3 mb-5 bg-white rounded" style="width: 90%; margin-right: 20px; margin-left: 10px; cursor: pointer;" onmouseover="make_blue(this)" onmouseout="remove_border(this)">
+        <div class="loader_ajax_small" style="display: none;"></div>
+        <div class="card-body">
+          <h5 class="card-title"><b>Phone:</b> {{r['phone']}}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{r['email']}}</h6>
+          <p class="card-text mb-2 text-info"><b>Linkedin:</b> {{r['linkedin']}}</p>
+          <p class="card-text"><b>Years of Experience:</b> {{r['exp_years']}}</p>
+          <a href="{{url_for('view',link=url[count.v])}}" class="card-link"><b>Open</b></a>
+          {% set count.v = count.v + 1 %}
+        </div>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endif %}
+      <input type="hidden" id="total_number" value="count.v">
+        <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="" onclick="change_page(this)">Previous</a></li>
+          <li class="page-item"><a class="page-link" href="" onclick="change_page(this)">Next</a></li>
+        </ul>
+    </div>
+  </div>
+</body>
+
+<script>
+
+  function make_blue(card) {
+    card.style.border = "1px solid blue"
+  }
+  function remove_border(card) {
+    card.style.border = null
+  }
+  function loader() {
+  //document.getElementById("resume_list").innerHTML=null
+	document.getElementById("img").style.visibility="visible"
+  console.log("number")
+  document.getElementById("resume_list").innerHTML = document.getElementById("resume_list_dup").innerHTML
+  console.log("done")
+  console.log("loader")
+  for(i=0;i<document.getElementsByClassName("loader_ajax_small").length;i=i+1) {
+    document.getElementsByClassName("loader_ajax_small")[i].style.display="block";
+    console.log(i);
+  }
+  console.log("card")
+  for(i=0;i<document.getElementsByClassName("card-body").length;i=i+1) {
+    card = document.getElementsByClassName("card-body")[i]
+    card.innerHTML=document.getElementsByClassName("card-body-dup")[0].innerHTML
+    console.log(i)
+  }
+}
+function change_page(pg) {
+  total = Integer(document.getElementById("total_number"))
+  console.log(total)
+  pagination = document.getElementsByClassName("pagination")[0]
+
+}
+// slight update to account for browsers not supporting e.which
+function disableF5(e) { if ((e.which || e.keyCode) == 116) e.preventDefault(); };
+// To disable f5
+    /* jQuery < 1.7 */
+$(document).bind("keydown", disableF5);
+/* OR jQuery >= 1.7 */
+$(document).on("keydown", disableF5); 
+
+// To re-enable f5
+    /* jQuery < 1.7 */
+$(document).unbind("keydown", disableF5);
+/* OR jQuery >= 1.7 */
+$(document).off("keydown", disableF5);
+
+
+
+</script>
+</html>
