@@ -12,7 +12,7 @@ conn = psycopg2.connect(host="ec2-35-172-85-250.compute-1.amazonaws.com",databas
 cur = conn.cursor()
 print("Opened database successfully")
 #conn.execute('DROP TABLE candidate')
-cur.execute('CREATE TABLE candidate (phone TEXT,email TEXT,linkedin TEXT,exp_years TEXT, duration TEXT,summary TEXT,skills TEXT,experience TEXT,education TEXT,extra TEXT,awards TEXT,filename TEXT, complete_resume TEXT, resume STRING(500) PRIMARY KEY)')
+cur.execute('CREATE TABLE candidate (phone TEXT,email TEXT,linkedin TEXT,exp_years TEXT, duration TEXT,summary TEXT,skills TEXT,experience TEXT,education TEXT,extra TEXT,awards TEXT,filename TEXT, complete_resume TEXT, resume VARCHAR(500) PRIMARY KEY)')
 print("Table created successfully")
 cur.close()
 dire = 'assets'
