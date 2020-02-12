@@ -2,15 +2,17 @@ import sqlite3
 from models import Candidate
 import nltk
 import shutil,os
+import psycopg2
 # nltk.download('punkt')
 # nltk.download('averaged_perceptron_tagger')
 # nltk.download('maxent_ne_chunker')
 # nltk.download('words')
 # nltk.download('wordnet')
-conn = sqlite3.connect('Candidate.db')
+conn = psycopg2.connect(host="ec2-35-172-85-250.compute-1.amazonaws.com",database="dag5m77tnenl1m", user="wyxfedkzbibfmg", password="40d812b02a4b9bfca7047b68bb2893cbbd3ca88496d90e6945909b145166ede9")
+
 print("Opened database successfully")
 #conn.execute('DROP TABLE candidate')
-conn.execute('CREATE TABLE candidate (phone TEXT,email TEXT,linkedin TEXT,exp_years TEXT, duration TEXT,summary TEXT,skills TEXT,experience TEXT,education TEXT,extra TEXT,awards,filename TEXT, complete_resume TEXT, resume STRING(500) PRIMARY KEY)')
+conn.execute('CREATE TABLE candidate (phone TEXT,email TEXT,linkedin TEXT,exp_years TEXT, duration TEXT,summary TEXT,skills TEXT,experience TEXT,education TEXT,extra TEXT,awards TEXT,filename TEXT, complete_resume TEXT, resume STRING(500) PRIMARY KEY)')
 print("Table created successfully")
 
 dire = 'assets'
