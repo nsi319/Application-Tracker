@@ -6,6 +6,7 @@ from datetime import date,datetime
 from utils import get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any
 from summary import get_summary
 from flask_migrate import Migrate
+from flask_heroku import Heroku
 import shutil
 import nltk
 
@@ -16,10 +17,11 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 app.config['UPLOAD_FOLDER']='all_resumes/'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost:3306/resumedb'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://pxphfakgepzrcl:58329f2842c6c1eb96e6fba66c10a85b8138f196ceb249656ae97f7d3a78157a@ec2-54-92-174-171.compute-1.amazonaws.com:5432/dbcerdkqrvhi20'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
+heroku = Heroku(app)
 db = SQLAlchemy(app)
-db.app = app
-migrate = Migrate(app, db)
+# db.app = app
+# migrate = Migrate(app, db)
 
 
 

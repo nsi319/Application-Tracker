@@ -19,15 +19,15 @@ tika.TikaClientOnly = True
 from tika import parser
 from subprocess import Popen, PIPE
 
-import docx
+# import docx
 
-#http://stackoverflow.com/questions/5725278/python-help-using-pdfminer-as-a-library
-from pdfminer3.layout import LAParams, LTTextBox
-from pdfminer3.pdfpage import PDFPage
-from pdfminer3.pdfinterp import PDFResourceManager
-from pdfminer3.pdfinterp import PDFPageInterpreter
-from pdfminer3.converter import PDFPageAggregator,TextConverter
-from io import StringIO
+# http://stackoverflow.com/questions/5725278/python-help-using-pdfminer-as-a-library
+# from pdfminer3.layout import LAParams, LTTextBox
+# from pdfminer3.pdfpage import PDFPage
+# from pdfminer3.pdfinterp import PDFResourceManager
+# from pdfminer3.pdfinterp import PDFPageInterpreter
+# from pdfminer3.converter import PDFPageAggregator,TextConverter
+# from io import StringIO
 import sys, getopt
 lemmatizer = WordNetLemmatizer()
 exp_years = re.compile('((.*\d{1,2}[.]?[+]?[0-9]*[ ]*[\W]?[ ]*(?:years|year|months|month|yrs|yr).*)|((?:experience of)[ ]*[0-9][0-9]*[.]?[0-9]*[ ]*[\W]?}.*))')
