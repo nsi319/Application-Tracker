@@ -23,7 +23,7 @@ class Candidate(db.Model):
 class Storage(db.Model):
     __tablename__="storage"
     resume = db.Column(db.String(500),nullable=False,primary_key=True)
-    file = db.Column(db.LONGBLOB)
+    file = db.Column(db.BLOB)
     def __repr__(self):
         return '<Storage %r>' % self.resume
 

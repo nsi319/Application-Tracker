@@ -8,7 +8,7 @@
 # # nltk.download('maxent_ne_chunker')
 # # nltk.download('words')
 # # nltk.download('wordnet')
-# conn = psycopg2.connect(host="ec2-35-172-85-250.compute-1.amazonaws.com",database="dag5m77tnenl1m", user="wyxfedkzbibfmg", password="40d812b02a4b9bfca7047b68bb2893cbbd3ca88496d90e6945909b145166ede9")
+# conn = psycopg2.connect(host="ec2-52-73-247-67.compute-1.amazonaws.com",database="dbd27anbkuq3m2", user="qkeebbeasjwfud", password="eeaf29f8b54c1471d9c68620f1d91b0612e702b1233e8b8688aeba67056f2060")
 # cur = conn.cursor()
 # print("Opened database successfully")
 # #conn.execute('DROP TABLE candidate')
