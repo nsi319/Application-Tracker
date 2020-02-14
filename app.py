@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import random, json
 import os,glob
 from datetime import date,datetime
-from utils import get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any,write_file
+from utils import get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any
 from summary import get_summary
 from flask_migrate import Migrate
 from flask_heroku import Heroku
@@ -13,13 +13,13 @@ import nltk
 
 app = Flask(__name__)
 app.secret_key = 'secret'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 app.config['UPLOAD_FOLDER']='all_resumes/'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost:3306/resumedb'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://alucdujzotschm:0ecac16d3bb006b5b6ea2d27f335b437b669d54798e92b2f63b6fcfde122996b@ec2-3-231-46-238.compute-1.amazonaws.com:5432/dc9iulcje872ba'
-#app.config['SECRET_KEY']='nokey'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
+app.config['SECRET_KEY']='nokey'
 app.config.from_object(os.environ['APP_SETTINGS'])
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
 heroku = Heroku(app)
 db = SQLAlchemy(app)
 # db.app = app
@@ -54,9 +54,8 @@ def search():
             total = int(dict_res['total'])
             filenames = dict_res['filename']
             complete=dict_res['complete']
-            files = dict_res['files']
 
-            from models import Candidate,Storage
+            from models import Candidate
             duplicate=0
             for i in range(total):
                 k=0
@@ -71,10 +70,7 @@ def search():
                 path_res = os.path.abspath(all_res)
                 uniq = path_res + "/" + str(timestamp) +  filenames[i].split("/")[-1].split(".")[0] + "." + filenames[i].split(".")[-1]
                 #print("filename and unique",(filenames[i],uniq))
-                new_cand = Candidate(email=str(first[0]),linkedin=first[1],phone=first[2][0],exp_years=first[3],duration="\n".join(first[4]),summary=second[0],skills=second[1],experience=second[2],education=second[3],extra=second[4],awards=second[5],resume=uniq,filename=filenames[i],complete_resume=complete[i])
-                new_storage = Storage(resume=uniq,file=files[i])
-                db.session.add(new_storage)
-                db.session.commit()
+                new_cand = Candidate(email=str(first[0]),linkedin=first[1],phone=first[2][0],exp_years=first[3],duration=" | ".join(first[4]),summary=second[0],skills=second[1],experience=second[2],education=second[3],extra=second[4],awards=second[5],resume=uniq,filename=filenames[i],complete_resume=complete[i])
                 if new_cand.email=='NA' and new_cand.phone=='NA':
                     #print("inside both na",filenames[i])
                     #print(new_cand.email + " " + new_cand.phone)
@@ -379,17 +375,8 @@ def view(link):
 
 @app.route('/uploads/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
-    from models import Storage
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
-    store = Storage.query.filter_by(resume=uploads + filename).first()
-    dire = 'download'
-    if os.path.exists(os.path.abspath(dire)):
-        shutil.rmtree(dire)
-    os.makedirs(os.path.abspath(dire))
-
-    write_file(store.file,os.path.abspath(dire) + "/" + filename)
-
-    return send_from_directory(directory=os.path.abspath(dire) + "/", filename=filename,as_attachment=True,attachment_filename=remove_number(filename))
+    return send_from_directory(directory=uploads, filename=filename,as_attachment=True,attachment_filename=remove_number(filename))
 
 @app.route("/upload_resumes",methods=['POST'])
 def upload_resumes():

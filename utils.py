@@ -35,7 +35,6 @@ linkedin_regex = r'^((http|https):\/\/)?+(www.linkedin.com\/)+[a-z]+(\/)+[a-zA-Z
 email_regex = r'[A-Za-z0-9+_.]+[@][A-Za-z.-_]+[.][a-z]+'
 phone_regex = r'[+]?\d{1,2}?[-]?[ ]?\d{5}[ ]?[-]?\d{5,}'
 work_duration_regex = r".*[-]?[ ]*\d{2,4}[ ]*\b(?:to|To|-| - )[ ]*[a-zA-Z0-9'-]*[ ]*[a-zA-Z0-9'-]*.*(?:\n).*"
-
 '''
 filenames=[]
 resume_list = []
@@ -126,14 +125,10 @@ def get_details_from_path(path):
     names=[]
     resume_list=[]
     filenames=[]
-    files=[]
     num=0
     path_resume=path
     for extension in ['*.docx', '*.doc', '*.pdf','*.odt']:
         for filename in glob.glob(os.path.join(path_resume, extension)):
-            with open(filename, 'rb') as file:
-                 binaryData = file.read()
-                 files.append(binaryData)
             print('filename: ', filename)
             #text1 = document_to_text(filename)
             parsed = parser.from_file(filename)
@@ -150,7 +145,7 @@ def get_details_from_path(path):
             resume_list.append(final_str)
             num = num + 1
     
-    return resume_list,names,num,filenames,files
+    return resume_list,names,num,filenames
 
 def get_title_desc():
     path = "titles"
@@ -576,10 +571,10 @@ def get_secondary_details(resume_list,names):
 
 
 def get_resume_details(path):
-    resume_list,names,total,filenames,files = get_details_from_path(path)
+    resume_list,names,total,filenames = get_details_from_path(path)
     dict1 = get_primary_details(resume_list,names)
     dict2 = get_secondary_details(resume_list,names)
-    return dict(zip(["dict1","dict2","total","filename","complete","files"],[dict1,dict2,total,filenames,resume_list,files]))
+    return dict(zip(["dict1","dict2","total","filename","complete"],[dict1,dict2,total,filenames,resume_list]))
 
 def change_permissions_recursive(path, mode):
     for root, dirs, files in os.walk(path, topdown=False):
@@ -619,8 +614,5 @@ def get_freq(p):
     return fdist
 
 
-def write_file(data, filename):
-    # Convert binary data to proper format and write it on Hard Disk
-    with open(filename, 'wb') as file:
-        file.write(data)
+
 
