@@ -34,7 +34,7 @@ exp_years = re.compile('((.*\d{1,2}[.]?[+]?[0-9]*[ ]*[\W]?[ ]*(?:years|year|mont
 linkedin_regex = r'^((http|https):\/\/)?+(www.linkedin.com\/)+[a-z]+(\/)+[a-zA-Z0-9-]{5,30}+$'
 email_regex = r'[A-Za-z0-9+_.]+[@][A-Za-z.-_]+[.][a-z]+'
 phone_regex = r'[+]?\d{1,2}?[-]?[ ]?\d{5}[ ]?[-]?\d{5,}'
-work_duration_regex = r".*[-]?[ ]*\d{2,4}[ ]*\b(?:to|To|-| - )[ ]*[a-zA-Z0-9'-]*[ ]*[a-zA-Z0-9'-]*.*"
+work_duration_regex = r".*[-]?[ ]*\d{2,4}[ ]*\b(?:to|To|-| - )[ ]*[a-zA-Z0-9'-]*[ ]*[a-zA-Z0-9'-]*.*(?:\n).*"
 '''
 filenames=[]
 resume_list = []
@@ -54,11 +54,11 @@ years_experience_data = []
 work_duration_data = []
 total=0
 '''
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('maxent_ne_chunker')
-nltk.download('words')
-nltk.download('wordnet')
+# nltk.download('punkt')
+# nltk.download('averaged_perceptron_tagger')
+# nltk.download('maxent_ne_chunker')
+# nltk.download('words')
+# nltk.download('wordnet')
 
 def sortSecond(val):
     return val[1]
@@ -72,6 +72,9 @@ def remove_number(text):
     pattern = '[0-9]'
     list = [re.sub(pattern, '', i) for i in text.split(" ")]
     return " ".join(list)
+
+def replacesub(input, pattern, replaceWith): 
+    return input.replace(pattern, replaceWith)
 
 
 def convert_pdf_to_txt(path):
@@ -478,8 +481,13 @@ def get_work_duration(resume_list,names):
     data = []
     for i in range(len(resume_list)):
         data = re.findall(work_duration_regex, str("\n".join(resume_list[i].splitlines())))
-        if data:
-            duration.append(data)
+        dur=[]
+        for d in data:
+            if re.search('[a-zA-Z]', str(d)):
+                da = replacesub(str(d),'\n',' >> ')
+                dur.append(da)
+        if dur:
+            duration.append(dur)
         else:
             duration.append(['NA'])
     return duration

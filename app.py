@@ -16,9 +16,10 @@ app.secret_key = 'secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 app.config['UPLOAD_FOLDER']='all_resumes/'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost:3306/resumedb'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://alucdujzotschm:0ecac16d3bb006b5b6ea2d27f335b437b669d54798e92b2f63b6fcfde122996b@ec2-3-231-46-238.compute-1.amazonaws.com:5432/dc9iulcje872ba'
-app.config['SECRET_KEY']='nokey'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://alucdujzotschm:0ecac16d3bb006b5b6ea2d27f335b437b669d54798e92b2f63b6fcfde122996b@ec2-3-231-46-238.compute-1.amazonaws.com:5432/dc9iulcje872ba'
+#app.config['SECRET_KEY']='nokey'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
+app.config.from_object(os.environ['APP_SETTINGS'])
 heroku = Heroku(app)
 db = SQLAlchemy(app)
 # db.app = app
