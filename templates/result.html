@@ -60,7 +60,7 @@
   }
 </style>
 -->
-<body>
+<body id="body">
   <div hidden>
   <div class="card-body-dup">
     <h5 class="card-title"><b>Phone:</b> </h5>
@@ -193,6 +193,7 @@
   function loader() {
   //document.getElementById("resume_list").innerHTML=null
 	document.getElementById("img").style.visibility="visible"
+  document.getElementById("body").style.pointerEvents="none"
   console.log("number")
   document.getElementById("resume_list").innerHTML = document.getElementById("resume_list_dup").innerHTML
   console.log("done")

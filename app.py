@@ -368,7 +368,7 @@ def view(link):
     else:
         skill = str(cand.skills).replace('\n','<br>')
     if cand.exp:
-        exp='NA':
+        exp='NA'
     else:
         exp = str(cand.experience).replace('\n','<br>')
 

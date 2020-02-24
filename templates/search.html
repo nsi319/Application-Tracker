@@ -13,7 +13,7 @@
 
 
 </head>
-<body style="font-size: 15px;">
+<body style="font-size: 15px;" id="body">
 	<div class="loading" id="loading_full" style="visibility: collapse;">Loading&#8230;</div>
 <br>
 
@@ -164,9 +164,12 @@ function generateSkill() {
 
 function loader() {
 	document.getElementById("img").style.visibility="visible"
+	document.getElementById("body").style.pointerEvents="none"
+
 }
 function full_load() {
 		document.getElementById("loading_full").style.visibility="visible"
+		document.getElementById("body").style.pointerEvents="none"
 
 }
 
@@ -176,6 +179,9 @@ document.getElementById("resume_search").onkeypress = function(e) {
   if (key == 13) {
     e.preventDefault();
   }
+}
+function make_unres() {
+	document.getElementById("body").style.pointerEvents="none"
 }
 
 /*
