@@ -364,15 +364,17 @@ def view(link):
     cand = Candidate.query.filter_by(resume=path_res + "/" + link).first()
     print(link)
     if cand.skills:
-        skills = 'NA'
+        skill = 'NA'
     else:
         skill = str(cand.skills).replace('\n','<br>')
     if cand.experience:
         exp='NA'
     else:
         exp = str(cand.experience).replace('\n','<br>')
+    
+    dur = str(cand.duration).replace('\n','<br>')
 
-    return render_template('candidate.html',cand=cand,download=link,name=remove_number(link),skill=skill,exp=exp)
+    return render_template('candidate.html',cand=cand,download=link,name=remove_number(link),skill=skill,exp=exp,dur=dur)
 
 
 
