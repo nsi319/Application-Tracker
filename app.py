@@ -70,7 +70,7 @@ def search():
                 path_res = os.path.abspath(all_res)
                 uniq = path_res + "/" + str(timestamp) +  filenames[i].split("/")[-1].split(".")[0] + "." + filenames[i].split(".")[-1]
                 #print("filename and unique",(filenames[i],uniq))
-                new_cand = Candidate(email=str(first[0]),linkedin=first[1],phone=first[2][0],exp_years=first[3],duration=" | ".join(first[4]),summary=second[0],skills=second[1],experience=second[2],education=second[3],extra=second[4],awards=second[5],resume=uniq,filename=filenames[i],complete_resume=complete[i])
+                new_cand = Candidate(email=str(first[0]),linkedin=first[1],phone=first[2][0],exp_years=first[3],duration="\n".join(first[4]),summary=second[0],skills=second[1],experience=second[2],education=second[3],extra=second[4],awards=second[5],resume=uniq,filename=filenames[i],complete_resume=complete[i])
                 if new_cand.email=='NA' and new_cand.phone=='NA':
                     #print("inside both na",filenames[i])
                     #print(new_cand.email + " " + new_cand.phone)
@@ -363,11 +363,14 @@ def view(link):
     path_res = os.path.abspath(all_res)
     cand = Candidate.query.filter_by(resume=path_res + "/" + link).first()
     print(link)
-    if len(cand.skills.split(' '))>200:
-        skill = get_summary(cand.skills)
+    if cand.skills:
+        skills = 'NA'
     else:
         skill = str(cand.skills).replace('\n','<br>')
-    exp = str(cand.experience).replace('\n','<br>')
+    if cand.exp:
+        exp='NA':
+    else:
+        exp = str(cand.experience).replace('\n','<br>')
 
     return render_template('candidate.html',cand=cand,download=link,name=remove_number(link),skill=skill,exp=exp)
 

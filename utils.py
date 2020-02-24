@@ -484,8 +484,13 @@ def get_work_duration(resume_list,names):
         dur=[]
         for d in data:
             if re.search('[a-zA-Z]', str(d)):
-                da = replacesub(str(d),'\n',' >> ')
-                dur.append(da)
+                da = replacesub(str(d),'\n',' ')
+                mob = re.findall(phone_regex,str(da))
+                da1 = da + "\n"
+                if mob:
+                    print("none")
+                else:
+                    dur.append(da1)
         if dur:
             duration.append(dur)
         else:
