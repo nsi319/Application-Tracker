@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import random, json
 import os,glob
 from datetime import date,datetime
-from utils import get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any
+from utils import get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any,rank_resume
 from summary import get_summary
 from flask_migrate import Migrate
 from flask_heroku import Heroku
@@ -18,9 +18,9 @@ app.config['UPLOAD_FOLDER']='all_resumes/'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost:3306/resumedb'
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://alucdujzotschm:0ecac16d3bb006b5b6ea2d27f335b437b669d54798e92b2f63b6fcfde122996b@ec2-3-231-46-238.compute-1.amazonaws.com:5432/dc9iulcje872ba'
 app.config['SECRET_KEY']='nokey'
-app.config.from_object(os.environ['APP_SETTINGS'])
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
-heroku = Heroku(app)
+#app.config.from_object(os.environ['APP_SETTINGS'])
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
+#heroku = Heroku(app)
 db = SQLAlchemy(app)
 # db.app = app
 # migrate = Migrate(app, db)
@@ -175,13 +175,16 @@ def result():
                 filter_link=[]
                 return render_template('result.html',result=filter_list,skills="[ ]",exp = ",",key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),empty=empty,url=filter_link)
             else:
+
                 filter_link=[]
                 for cand in filter_list:
                     url_link = cand.resume
                     filter_link.append(url_link.split("/")[-1])
-                return render_template('result.html',result=filter_list,skills="[ ]",exp = ",",key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link)
+                result_list = rank_resume(filter_list,[],all_key_list,any_key_list)
+                return render_template('result.html',result=result_list,skills="[ ]",exp = ",",key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link)
 
         else:
+
             skill = request.form.getlist('skill')
             skill_exp = request.form.getlist('skill_exp')
             skill_cond = request.form['skill_condition']
@@ -191,10 +194,6 @@ def result():
             min_expyear = request.form['min_expyear']
             max_expyear = request.form['max_expyear']
 
-            #print(skill)
-            #print(skill_exp)
-            #print(skill_cond)
-            #print(skill_iter)
             
             #search for skill and exp
 
@@ -212,8 +211,6 @@ def result():
             if str(max_expyear)=='':
                 max_expyear="10000"
             
-            #print(min_expyear)
-            #print(max_expyear)
 
             any_key_list = any_key.split(",")
             all_key_list = all_key.split(",")
@@ -321,16 +318,13 @@ def result():
             
             set_keys = set(keys_matched)
 
-            #exp_matched = " Experience between [" + str(mini) + " , " + str(maxi) + "] years " 
             exp_matched = str(mini) + " , " + str(maxi)
             list_set_keys = list(set_keys)
 
-            #keywords_matched.append(" Keywords: [ ")
             keywords_matched.append("| ".join(any_key_list))
             if all_key_list:
                 keywords_matched.append("| ")
             keywords_matched.append("| ".join(all_key_list)) 
-            #keywords_matched.append("] ")
 
             p=0
             for sk in skill:
@@ -349,7 +343,8 @@ def result():
                 for cand in filter_list:
                     url_link = cand.resume
                     filter_link.append(url_link.split("/")[-1])
-                return render_template('result.html',result=filter_list,skills= val + " ".join(list_set_keys),exp = " " + exp_matched + " " ,key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link)
+                result_list = rank_resume(filter_list,skill,all_key_list,any_key_list)
+                return render_template('result.html',result=result_list,skills= val + " ".join(list_set_keys),exp = " " + exp_matched + " " ,key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link)
     else:
         empty="NO MATCHES FOUND"
         return render_template('result.html',empty_reload=empty)
@@ -395,6 +390,7 @@ def upload_resumes():
 @app.route("/cardview",methods=['GET'])
 def cardview():
     return render_template('detail.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

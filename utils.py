@@ -12,22 +12,14 @@ from nltk.stem import WordNetLemmatizer
 import string
 import shutil
 
-#os.environ['TIKA_SERVER_JAR'] = 'https://repo1.maven.org/maven2/org/apache/tika/tika-server/1.23/tika-server-1.23.jar'
 import tika
 tika.initVM()
 tika.TikaClientOnly = True
 from tika import parser
 from subprocess import Popen, PIPE
 
-# import docx
 
-# http://stackoverflow.com/questions/5725278/python-help-using-pdfminer-as-a-library
-# from pdfminer3.layout import LAParams, LTTextBox
-# from pdfminer3.pdfpage import PDFPage
-# from pdfminer3.pdfinterp import PDFResourceManager
-# from pdfminer3.pdfinterp import PDFPageInterpreter
-# from pdfminer3.converter import PDFPageAggregator,TextConverter
-# from io import StringIO
+from io import StringIO
 import sys, getopt
 lemmatizer = WordNetLemmatizer()
 exp_years = re.compile('((.*\d{1,2}[.]?[+]?[0-9]*[ ]*[\W]?[ ]*(?:years|year|months|month|yrs|yr).*)|((?:experience of)[ ]*[0-9][0-9]*[.]?[0-9]*[ ]*[\W]?}.*))')
@@ -35,25 +27,7 @@ linkedin_regex = r'^((http|https):\/\/)?+(www.linkedin.com\/)+[a-z]+(\/)+[a-zA-Z
 email_regex = r'[A-Za-z0-9+_.]+[@][A-Za-z.-_]+[.][a-z]+'
 phone_regex = r'[+]?\d{1,2}?[-]?[ ]?\d{5}[ ]?[-]?\d{5,}'
 work_duration_regex = r".*[-]?[ ]*\d{2,4}[ ]*\b(?:to|To|-| - )[ ]*[a-zA-Z0-9'-]*[ ]*[a-zA-Z0-9'-]*.*(?:\n).*"
-'''
-filenames=[]
-resume_list = []
-names = []
-summary = []
-work_experience = []
-education = []
-technical_skills = []
-extra_curr = []
-awards = []
-file_list = []
-required_headings = []
-email_data = []
-linkedin_data = []
-phone_data=[]
-years_experience_data = []
-work_duration_data = []
-total=0
-'''
+
 nltk.download('punkt')
 nltk.download('averaged_perceptron_tagger')
 nltk.download('maxent_ne_chunker')
@@ -77,48 +51,6 @@ def replacesub(input, pattern, replaceWith):
     return input.replace(pattern, replaceWith)
 
 
-def convert_pdf_to_txt(path):
-
-
-    resource_manager = PDFResourceManager()
-    fake_file_handle = StringIO()
-    converter = TextConverter(resource_manager, fake_file_handle)
-    page_interpreter = PDFPageInterpreter(resource_manager, converter)
-
-    with open(path, 'rb') as fh:
-
-        for page in PDFPage.get_pages(fh,
-                                    caching=True,
-                                    check_extractable=True):
-            page_interpreter.process_page(page)
-
-        text = fake_file_handle.getvalue()
-
-    # close open handles
-    converter.close()
-    fake_file_handle.close()
-
-    return text
-   
-def document_to_text(file_path):
-    if file_path.split('.')[-1].strip() == "doc":
-        cmd = ['antiword', file_path]
-        p = Popen(cmd, stdout=PIPE,shell=True)
-        stdout, stderr = p.communicate()
-        return stdout.decode('ascii', 'ignore')
-    elif file_path.split('.')[-1].strip() == "docx":
-        doc = docx.Document(file_path)
-        fullText = []
-        for para in doc.paragraphs:
-            fullText.append(para.text)
-        return '\n'.join(fullText)    
-    elif file_path.split('.')[-1].strip() == "odt":
-        cmd = ['odt2txt', file_path]
-        p = Popen(cmd, stdout=PIPE)
-        stdout, stderr = p.communicate()
-        return stdout.decode('ascii', 'ignore')
-    elif file_path.split('.')[-1].strip() == "pdf":
-        return convert_pdf_to_txt(file_path)
 
 
 def get_details_from_path(path):
@@ -164,24 +96,6 @@ def get_title_desc():
         file_list.append(f)
         final_str = ''
         text = text.lower()
-        # if os.path.splitext(filename)[0].split("\\")[-1] == 'summary':
-        #     for tex in text.splitlines():
-        #         summary.append(tex)
-        # elif os.path.splitext(filename)[0].split("\\")[-1] == 'education':
-        #     for tex in text.splitlines():
-        #         education.append(tex)
-        # elif os.path.splitext(filename)[0].split("\\")[-1] == 'technical_skills':
-        #     for tex in text.splitlines():
-        #         technical_skills.append(tex)
-        # elif os.path.splitext(filename)[0].split("\\")[-1] == 'work_experience':
-        #     for tex in text.splitlines():
-        #         work_experience.append(tex)
-        # elif os.path.splitext(filename)[0].split("\\")[-1] == 'extra_curr':
-        #     for tex in text.splitlines():
-        #         extra_curr.append(tex)
-        # elif os.path.splitext(filename)[0].split("\\")[-1] == 'awards':
-        #     for tex in text.splitlines():
-        #         awards.append(tex)
 
         if str(filename).find('summary')>=0:
             for tex in text.splitlines():
@@ -250,62 +164,15 @@ def get_parsed_resume(resume_list, names, which_resume):
 
     # get headings of all
     heading_list = get_headings(resume_list, names)
-    print("HEADING LIST: \n " + str(which_resume))
-    print(heading_list[which_resume])
-    print("\n")
+    # print("HEADING LIST: \n " + str(which_resume))
+    # print(heading_list[which_resume])
+    # print("\n")
     k = 0
     # tokenize, lemma both
     # and then check for
     # correct matching
     for num, head in heading_list[which_resume]:
-        '''
 
-        str = " ".join((head.split(":")[0]).split()).strip()
-        k=0
-        for st in work_experience:
-            if st.find(str)>=0:
-                classify_headings[2].append((str,num,2))
-                k=1
-        if k==1:
-            continue
-        
-        for st in summary:
-            if st.find(str)>=0:
-                classify_headings[0].append((str,num,0))
-                k=1
-        if k==1:
-            continue
-
-        for st in technical_skills:
-            if st.find(str)>=0:
-                classify_headings[1].append((str,num,1))
-                k=1
-        if k==1:
-            continue
-
-        for st in education:
-            if st.find(str)>=0:
-                classify_headings[3].append((str,num,3))
-                k=1
-        if k==1:
-            continue
-
-        for st in extra_curr:
-            if st.find(str)>=0:
-                classify_headings[4].append((str,num,4))
-                k=1
-        if k==1:
-            continue
-
-        for st in awards:
-            if st.find(str)>=0:
-                classify_headings[5].append((str,num,5))
-                k=1
-        if k==1:
-            continue
-
-
-        '''
         str1 = " ".join((head.split(":")[0]).split())
         str2 = str1.strip()
         #str_lemma = [lemmatizer.lemmatize(word) for word in str2.split()]
@@ -399,9 +266,9 @@ def get_parsed_resume(resume_list, names, which_resume):
     required_headings.append(('eof', np.Infinity, 6))
     required_headings.sort(key=sortSecond)
 
-    print("REQD HEADINGS:  \n" + str(which_resume))
-    print(required_headings)
-    print("\n")
+    # print("REQD HEADINGS:  \n" + str(which_resume))
+    # print(required_headings)
+    # print("\n")
 
     each_summary = []
     each_tech_skills = []
@@ -569,7 +436,6 @@ def get_secondary_details(resume_list,names):
         education_text.append("\n".join(each_education))
         extra_text.append("\n".join(each_extra))
         awards_text.append("\n".join(each_awards))
-        print(each_work_exp)
         print("parsing done for ",names[i])
     
     return dict(zip(["summary","skills","experience","education","extra","awards"],[summary_text,tech_skill_text,work_exp_text,education_text,extra_text,awards_text]))    
@@ -617,6 +483,50 @@ def get_freq(p):
         for word in nltk.tokenize.word_tokenize(sentence):
             fdist[word] +=1
     return fdist
+
+# rank resumes
+
+def rank_resume(filter_list,key1,key2,key3):
+    rank_list = []
+    score_list = []
+    accuracy_list = []
+    total_score = 0
+    for cand in filter_list:
+        score = 0
+        accuracy = 0
+        resume = (cand.complete_resume).lower()
+        for key in key1:
+            if key:
+                score = score + (1.2 * resume.count(str(key.lower())))/len(key1)
+                print(key,resume.count(str(key.lower())))
+                print("\n")
+        for key in key2:
+            if key:
+                score = score + (1.1 * resume.count(str(key.lower())))/len(key2)
+                print(key,resume.count(str(key.lower())))
+                print("\n")
+        for key in key3:
+            if key:
+                score = score +  resume.count(str(key.lower()))/len(key3)
+                print(key,resume.count(str(key.lower())))
+                print("\n")
+        print(cand.email)
+        print(score)
+        total_score = total_score + score
+        print("\n")
+        rank_list.append((cand,score))
+
+    rank_list.sort(key=sortSecond,reverse=True)
+    rank = []
+    for cand,score in rank_list:
+        rank.append(cand)
+    return rank
+    
+    
+    
+
+    
+
 
 
 
