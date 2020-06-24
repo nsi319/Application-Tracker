@@ -25,7 +25,7 @@ lemmatizer = WordNetLemmatizer()
 exp_years = re.compile('((.*\d{1,2}[.]?[+]?[0-9]*[ ]*[\W]?[ ]*(?:years|year|months|month|yrs|yr).*)|((?:experience of)[ ]*[0-9][0-9]*[.]?[0-9]*[ ]*[\W]?}.*))')
 linkedin_regex = r'^((http|https):\/\/)?+(www.linkedin.com\/)+[a-z]+(\/)+[a-zA-Z0-9-]{5,30}+$'
 email_regex = r'[A-Za-z0-9+_.]+[@][A-Za-z.-_]+[.][a-z]+'
-phone_regex = r'[+]?\d{1,2}?[-]?[ ]?\d{5}[ ]?[-]?\d{5,}'
+phone_regex = r'[+]?\d{1,2}?[-]?[ ]?\d{3,5}[ ]?[-]?\d{5,}'
 work_duration_regex = r".*[-]?[ ]*\d{2,4}[ ]*\b(?:to|To|-| - )[ ]*[a-zA-Z0-9'-]*[ ]*[a-zA-Z0-9'-]*.*(?:\n).*"
 
 nltk.download('punkt')
@@ -71,7 +71,7 @@ def get_details_from_path(path):
             names.append(current)
             #print("Loading " + str(num) + " " + str(current))
             final_str = ''
-            for char in text.__str__():
+            for char in parsed["content"].__str__():
                 if char in string.printable or char=='\n':
                     final_str += char
             resume_list.append(final_str)
