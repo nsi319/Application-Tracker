@@ -3,7 +3,7 @@
 <head>
 	<h2 style="text-align: center;">RESUME PARSER</h2>
 	<title>
-		HOME
+		Search 
 	</title>
 
 	<link rel="stylesheet"  type="text/css" href="{{ url_for('static',filename='search.css') }}">
@@ -138,6 +138,9 @@
 
 
 <script>
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
 
 var count=1, limit=2;
 
