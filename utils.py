@@ -17,6 +17,9 @@ tika.initVM()
 tika.TikaClientOnly = True
 from tika import parser
 from subprocess import Popen, PIPE
+from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk.tokenize import word_tokenize, sent_tokenize
 
 
 from io import StringIO
@@ -63,18 +66,21 @@ def get_details_from_path(path):
         for filename in glob.glob(os.path.join(path_resume, extension)):
             print('filename: ', filename)
             #text1 = document_to_text(filename)
-            parsed = parser.from_file(filename)
-            text = parsed["content"]  # To get the content of the file
-            #text = str(text1)
-            current = filename.lower().split("/")[-1].split(".")[0]
-            filenames.append(filename)
-            names.append(current)
-            #print("Loading " + str(num) + " " + str(current))
-            final_str = ''
-            for char in parsed["content"].__str__():
-                if char in string.printable or char=='\n':
-                    final_str += char
-            resume_list.append(final_str)
+            try:
+                parsed = parser.from_file(filename)
+                text = parsed["content"]  # To get the content of the file
+                #text = str(text1)
+                current = filename.lower().split("/")[-1].split(".")[0]
+                filenames.append(filename)
+                names.append(current)
+                #print("Loading " + str(num) + " " + str(current))
+                final_str = ''
+                for char in parsed["content"].__str__():
+                    if char in string.printable or char=='\n':
+                        final_str += char
+                resume_list.append(final_str)
+            except:
+                return -1,-1,-1,-1
             num = num + 1
     
     return resume_list,names,num,filenames
@@ -443,9 +449,12 @@ def get_secondary_details(resume_list,names):
 
 def get_resume_details(path):
     resume_list,names,total,filenames = get_details_from_path(path)
-    dict1 = get_primary_details(resume_list,names)
-    dict2 = get_secondary_details(resume_list,names)
-    return dict(zip(["dict1","dict2","total","filename","complete"],[dict1,dict2,total,filenames,resume_list]))
+    if resume_list!=-1:
+        dict1 = get_primary_details(resume_list,names)
+        dict2 = get_secondary_details(resume_list,names)
+        return dict(zip(["dict1","dict2","total","filename","complete"],[dict1,dict2,total,filenames,resume_list]))
+    else:
+        return -1
 
 def change_permissions_recursive(path, mode):
     for root, dirs, files in os.walk(path, topdown=False):
@@ -521,12 +530,70 @@ def rank_resume(filter_list,key1,key2,key3):
     for cand,score in rank_list:
         rank.append(cand)
     return rank
-    
-    
-    
 
-    
+def _create_frequency_table(text_string) -> dict:
 
+    stopWords = set(stopwords.words("english"))
+    words = word_tokenize(text_string)
+    ps = PorterStemmer()
+
+    freqTable = dict()
+    for word in words:
+        word = ps.stem(word)
+        if word in stopWords:
+            continue
+        if word in freqTable:
+            freqTable[word] += 1
+        else:
+            freqTable[word] = 1
+
+    return freqTable
+
+def _score_sentences(sentences, freqTable) -> dict:
+    sentenceValue = dict()
+
+    for sentence in sentences:
+        word_count_in_sentence = (len(word_tokenize(sentence)))
+        for wordValue in freqTable:
+            if wordValue in sentence.lower():
+                if sentence[:10] in sentenceValue:
+                    sentenceValue[sentence[:10]] += freqTable[wordValue]
+                else:
+                    sentenceValue[sentence[:10]] = freqTable[wordValue]
+
+        sentenceValue[sentence[:10]] = sentenceValue[sentence[:10]] // word_count_in_sentence
+
+    return sentenceValue
+
+def _find_average_score(sentenceValue) -> int:
+    sumValues = 0
+    for entry in sentenceValue:
+        sumValues += sentenceValue[entry]
+
+    average = int(sumValues / len(sentenceValue))
+
+    return average
+
+def _generate_summary(sentences, sentenceValue, threshold):
+    sentence_count = 0
+    summary = ''
+
+    for sentence in sentences:
+        if sentence[:10] in sentenceValue and sentenceValue[sentence[:10]] > (threshold):
+            summary += " " + sentence
+            sentence_count += 1
+
+    return summary
+
+def get_summary(text):
+    nltk.download('stopwords')
+    freq_table = _create_frequency_table(text)
+    sentences = sent_tokenize(text)
+    sentence_scores = _score_sentences(sentences, freq_table)
+    threshold = _find_average_score(sentence_scores)
+    summary = _generate_summary(sentences, sentence_scores, 1.25 * threshold)
+
+    return summary
 
 
 
