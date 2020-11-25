@@ -1,25 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <h2 style="text-align: center;">SEARCH RESULTS</h2>
+  <br>
+  <br>
   <br>
 	<title>
 		Results
 	</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+ 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
 </head>
 
-<body id="body">
-  <div hidden>
-  <div class="card-body-dup">
-    <h5 class="card-title"><b>Phone:</b> </h5>
-    <h6 class="card-subtitle mb-2 text-muted"><b>Email:</b></h6>
-    <p class="card-text"><b>Linkedin:</b></p>
-    <p class="card-text"><b>Experience:</b></p>
-    <a href="#" class="card-link"><b>Open</b></a>
+<style>
+  body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+  body, html {
+      height: 100%;
+      line-height: 1.8;
+  }
+  /* Full height image header */
+  .bgimg-1 {
+      background-position: center;
+      background-size: cover;
+      /*background-image: url("30.jpg");*/
+      background-color: black;
+      min-height: 100%;
+  }
+  .w3-bar .w3-button {
+      padding: 16px;
+  }
+  </style>
+  <body id="body">
+  
+  <!-- Navbar (sit on top) -->
+  <div class="w3-top">
+    <div class="w3-bar w3-white w3-card" id="myNavbar">
+      <a href="/company_home" class="w3-bar-item w3-button w3-wide">Applications</a>
+      <a href="#" class="w3-bar-item w3-button w3-wide">New Job</a>
+      <a href="/search" class="w3-bar-item w3-button w3-wide">Search</a>
+      <!-- Right-sided navbar links -->
+      <div class="w3-right">
+          <a href="admin.html" class="w3-bar-item w3-button"><i class="fa"></i>ADMINISTRATOR LOGIN</a>
+      </div>
+      <!-- Hide right-floated links on small screens and replace them with a menu icon -->
+    </div>
   </div>
+
+  <div hidden>
+  <div class="w3-card-4">
+    <header class="w3-container w3-blue">
+      <b>Phone:</b>    
+    </header>
+    <header class="w3-container w3-light-grey">
+      <b>Email:</b>    
+    </header>
+    <div class="w3-container">
+      <p><b>Linkedin:</b></p>
+    </div>
+    <div class="w3-container">
+      <p><b>Experience:</b></p>
+    </div>
+    <a href="#" style="text-decoration: underline; color: blue;"><b>Open</b></a>
+  </div>
+
   <div id ="resume_list_dup" style="margin-left: 10px;">
     Skills:<b> [ ]</b>    
     <br>
@@ -32,21 +80,21 @@
   
 
   </div>
-  <div class="row">
-    <div class="col-md-4 col-md-30">
+  <div class="row" style="display: flex;">
+    <div class="column" style="flex: 30%;" >
       <h6 style="text-align: center;"><b>Search within results:</b></h6>
       <br>
       <form class = "form_search" id="resume_search" action="/result" method="POST">
         <div class="input_forsearch">
           <div class="exp_input" style="margin: 10px; border: 5px; border-color: black;">
             <h6>Keywords: </h6>
-            <div class="form-group" style="margin: 10px;">
+            <div class="w3-container" style="margin: 10px;">
             <label for="any_key">Any of the keywords:</label>
-            <input type="text" class="form-control" name="rany_key" id="any_key" value="{{any}}" style="float: right; width: auto;"> 
+            <input type="text" class="w3-input w3-border w3-border-blue w3-hover-border-green" name="rany_key" id="any_key" value="{{any}}"> 
             </div>
-            <div class="form-group" style="margin: 10px;">
+            <div class="w3-container" style="margin: 10px;">
             <label for="all_key">All the keywords:</label>
-            <input type="text" name="rall_key" class="form-control" id="all_key" value="{{all}}" style="float: right; width: auto;"> 
+            <input type="text" name="rall_key" class="w3-input w3-border w3-border-blue w3-hover-border-green" id="all_key" value="{{all}}"> 
           </div>
           {% if result %}
           {% if from_search %}
@@ -60,15 +108,15 @@
           <br>
           <div class="button_center" style="text-align: center;">
           <input type="hidden" name="post" value="search_results">
-          <button class="btn-sm btn-dark" type="submit" onclick="loader()" style="margin-top: 10px;">
+          <button class="w3-button w3-black w3-round" type="submit" onclick="loader()" style="margin-top: 10px;">
             Find Resumes
             <span class="spinner-border spinner-border-sm" role="status" id="img" aria-hidden="true" style="visibility: collapse;"></span>
             </button>
           </div>
       </form>
       </div>
-    <div class="col-md-8 col-md-70 loader" >
-  
+
+    <div class="column" style="flex: 70%;" >
       <p>Resumes matched with:</p> 
       <div id ="resume_list" style="margin-left: 10px;">
       {% if skills %}
@@ -109,17 +157,26 @@
       {% if items %}
       {% if result %}
       {% for r in result %}
-      <div class="card shadow-sm p-3 mb-5 bg-white rounded" style="width: 90%; margin-right: 20px; margin-left: 10px; cursor: pointer;" onmouseover="make_blue(this)" onmouseout="remove_border(this)">
+      <div class="w3-card-4" style="width: 90%; margin-right: 20px; margin-left: 10px; cursor: pointer;" onmouseover="make_blue(this)" onmouseout="remove_border(this)">
         <div class="loader_ajax_small" style="display: none;"></div>
-        <div class="card-body">
-          <h5 class="card-title"><b>Phone:</b> {{r['phone']}}</h5>
-          <h6 class="card-subtitle mb-2 text-muted">{{r['email']}}</h6>
-          <p class="card-text mb-2 text-info"><b>Linkedin:</b> {{r['linkedin']}}</p>
-          <p class="card-text"><b>Years of Experience:</b> {{r['exp_years']}}</p>
-          <a href="{{url_for('view',link=url[count.v])}}" class="card-link"><b>Open</b></a>
-          {% set count.v = count.v + 1 %}
+        <header class="w3-container w3-blue">
+         <p> <b>Phone:</b> {{r['phone']}} </p>    
+        </header>
+        <header class="w3-container w3-light-grey">
+          <p><b>Email:</b> {{r['email']}}</p>    
+        </header>
+        <div class="w3-container">
+          <p><b>Linkedin:</b> {{r['linkedin']}}</p>
         </div>
+        <div class="w3-container">
+          <p><b>Experience:</b> {{r['exp_years']}}</p>
+        </div>
+        <div class="w3-container" >
+          <a href="{{url_for('view',link=url[count.v])}}" style="color: blue; align-self: center;" onmouseover="make_blue(this)" onmouseout="remove_border(this)"><b>Open</b></a>
       </div>
+        {% set count.v = count.v + 1 %}
+      </div>
+      <br>
       {% endfor %}
       {% endif %}
       {% endif %}
