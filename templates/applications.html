@@ -57,12 +57,10 @@ body, html {
                     <table class="w3-table-all">
                       <thead>
                         <td>Job ID</td>
-                        <td>Domain</td>
-                        <td>Post</td>
-                        <td>Salary</td>
-                        <td>Hours</td>
-                        <!-- <td>Company ID</td> -->
                         <td>Company</td>
+                        <td>Position</td>
+                        <td>Date of Application</td>
+                        <td>Status</td>
                       </thead>
                         {% for row in rows %}
                       <tr>
@@ -71,7 +69,6 @@ body, html {
                         <td >{{row[2]}}</td>
                         <td >{{row[3]}}</td>
                         <td >{{row[4]}}</td>
-                        <td >{{row[5]}}</td>
                       </tr>
                        {% endfor %}
                     </table>
@@ -85,12 +82,10 @@ body, html {
                   <table class="w3-table-all">
                         <thead>
                           <td>Job ID</td>
-                          <td>Domain</td>
-                          <td>Post</td>
-                          <td>Salary</td>
-                          <td>Hours</td>
-                          <!-- <td>Company ID</td> -->
                           <td>Company</td>
+                          <td>Position</td>
+                          <td>Date of Application</td>
+                          <td>Status</td>
                         </thead>
                           {% for row2 in rows2 %}
                         <tr>
@@ -99,7 +94,6 @@ body, html {
                           <td >{{row2[2]}}</td>
                           <td >{{row2[3]}}</td>
                           <td >{{row2[4]}}</td>
-                          <td >{{row2[5]}}</td>
                         </tr>
                          {% endfor %}
                       </table>
@@ -108,10 +102,6 @@ body, html {
         <!-- </form> -->
       </div>
 <!-- Footer -->
-<footer class="w3-center w3-black w3-padding-64">
-  <a href="#home" class="w3-button w3-light-grey"><i class="fa"></i>To the top</a>
-
-</footer>
 
 <!-- Add Google Maps -->
 <script>

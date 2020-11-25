@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>DBMSPROJ</title>
+<title>Home</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style.css">
@@ -45,10 +45,11 @@ body, html {
 
       <!-- Contact Section -->
       <div class=" w3-container w3-light-grey" style="padding:60px 16px" id="home">
-        <h1 class="w3-center">HELLO {{user}}</h1>
+        <h1 class="w3-center">Hello {{user}}!</h1>
         <!-- <p class="w3-center w3-large">Lets get in touch. Send us a message:</p> -->
         <div class="w3-row-padding" style="margin-top:64px">
-          <div class="w3-quarter">
+          <div class="w3-third">
+          <div class="w3-half">
             <!-- <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Chicago, US</p>
             <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +01515</p>
             <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p> -->
@@ -68,7 +69,7 @@ body, html {
               </p>
             </form>
           </div>
-          <div class="w3-quarter">
+          <div class="w3-half">
             <!-- <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Chicago, US</p>
             <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +00 151515</p>
             <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p> -->
@@ -123,9 +124,10 @@ body, html {
                     </select>
                 </p> -->
                 <p>Company<br><select name="company" placeholder="Company">
-                      <option value="IBM" name="company">IBM</option>
-                      <option value="Infosys" name="company">Infosys</option>
-                      <option value="TCS" name="company">TCS</option>
+                      <option value="Oracle" name="company">Oracle</option>
+                      <option value="DE SHAW" name="company">DE SHAW</option>
+                      <option value="Google" name="company">Google</option>
+                      <option value="Amazon" name="company">Amazon</option>
                       <option value="HP" name="company">HP</option>
                       <option value="Wipro" name="company">Wipro</option>
                       <option value="Cisco" name="company">Cisco</option>
@@ -134,7 +136,6 @@ body, html {
                       <option value="GE" name="company">GE</option>
                       <option value="Dell" name="company">Dell</option>
                       <option value="Flipkart" name="company">Flipkart</option>
-                      <option value="Amazon" name="company">Amazon</option>
                       <option value="Lenovo" name="company">Lenovo</option>
                       <option value="Unilever" name="company">Unilever</option>
                       <option value="PWC" name="company">PWC</option>
@@ -147,51 +148,67 @@ body, html {
                 </button>
             </p>
             </form>
-          </div>
-          <div class="w3-half w3-container">
+        </div>
+        </div>
+          <div class="w3-twothird w3-container">
             <form action="{{ url_for('job_apply') }}" method="post">
-              <h3>JOBS AVAILABLE</h3>
-              <!-- <div class="w3-container"> -->
-              <table class="w3-table-all">
+              <h3>AVAILABLE JOBS</h3>
+              {% if rows %}
+                <table class="w3-striped w3-border w3-bordered w3-centered" style="border-color: black;">
                   <thead>
-                    <td>Choice</td>
-                    <td>Job ID</td>
-                    <td>Domain</td>
-                    <td>Post</td>
-                    <td>Salary</td>
-                    <td>Hours</td>
-                    <!-- <td>Company ID</td> -->
-                    <td>Company</td>
+                    <td style="padding:0 15px;"><b>Apply</b></td>
+                    <td style="padding:0 15px;"><b>Company</b></td>
+                    <td style="padding:0 15px;"><b>Position</b></td>
+                    <td style="padding:0 15px;"><b>Description</b></td>
+                    <td style="padding:0 15px;"><b>Experience (years)</b></td>
+                    <td style="padding:0 15px;"><b>Annual Salary</b></td>
+                    <td style="padding:0 15px;"><b>Weekly hours</b></td>
+                    <!-- <td>Hours</td> -->
                   </thead>
                   {% for row in rows %}
-                  <tr>
+                  <div id="id01" class="w3-modal">
+                    <div class="w3-modal-content">
+                      <div class="w3-container">
+                        <span onclick="document.getElementById('id01').style.display='none'"
+                        class="w3-button w3-display-topright">&times;</span>
+                        <p><b>{{row[2]}} - {{row[1]}}</b></p>
+                        <b>Job Description: </b>
+                        <p>{{row[3]}}</p>
+                        <b>Skills:</b>
+                        <p>{{row[4]}}</p>
+                      </div>
+                    </div>
+                  </div>
 
+                  <tr>
                     <td ><input class="w3-input w3-border" type="checkbox" name="applyingfor" value={{row[0]}}></td>
-                    <td >{{row[0]}}</td>
                     <td >{{row[1]}}</td>
                     <td >{{row[2]}}</td>
-                    <td >{{row[3]}}</td>
-                    <td >{{row[4]}}</td>
+                    <td><button class="w3-button w3-purple w3-round" name="view" type="button" onclick="document.getElementById('id01').style.display='block';" style="height:40px; text-align: center;">
+                     View</button>
+                    </td>
                     <td >{{row[5]}}</td>
+                    <td >Rs {{row[6]}}</td>
+                    <td >{{row[7]}}</td>
                   </tr>
                    {% endfor %}
                 </table>
-                <p>
+                {% else %}
+                   <p>No jobs available</p>
+                   {% endif %}
+                {% if rows %}
+                <p> 
                 <button class="w3-button w3-black" type="submit">
                   <i class="fa"></i> APPLY
                 </button>
               </p>
+              {% endif %}
                <!-- </div> -->
           </form>
         </div>
 
       </div>
 
-<!-- Footer -->
-<footer class="w3-center w3-black w3-padding-64">
-  <a href="#home" class="w3-button w3-light-grey"><i class="fa"></i>To the top</a>
-
-</footer>
 
 <!-- Add Google Maps -->
 <script>
