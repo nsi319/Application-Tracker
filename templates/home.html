@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<title>DBMSPROJ</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+body, html {
+    height: 100%;
+    line-height: 1.8;
+}
+/* Full height image header */
+.bgimg-1 {
+    background-position: center;
+    background-size: cover;
+    /* background-image: url("cat.jpg"); */
+    min-height: 100%;
+}
+.w3-bar .w3-button {
+    padding: 16px;
+}
+</style>
+<body>
+
+    <!-- Navbar (sit on top) -->
+    <div class="w3-top">
+      <div class="w3-bar w3-white w3-card" id="myNavbar">
+        <a href="{{ url_for('home') }}" class="w3-bar-item w3-button w3-wide">HOME</a>
+        <a href="{{ url_for('applications') }}" class="w3-bar-item w3-button w3-wide">YOUR APPLICATIONS</a>
+        <!-- Right-sided navbar links -->
+        <div class="w3-right">
+            <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button"><i class="fa"></i>LOGOUT</a>
+        </div>
+        <!-- Hide right-floated links on small screens and replace them with a menu icon -->
+
+
+      </div>
+    </div>
+
+
+
+      <!-- Contact Section -->
+      <div class=" w3-container w3-light-grey" style="padding:60px 16px" id="home">
+        <h1 class="w3-center">HELLO {{user}}</h1>
+        <!-- <p class="w3-center w3-large">Lets get in touch. Send us a message:</p> -->
+        <div class="w3-row-padding" style="margin-top:64px">
+          <div class="w3-quarter">
+            <!-- <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Chicago, US</p>
+            <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +01515</p>
+            <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p> -->
+            <form action="{{ url_for('home') }}" method="get" id="sortby_form">
+              <h3>SORT BY</h3>
+               <!-- <p><input class="w3-input w3-border" type="textarea" placeholder="Enter Preferences" required name="pref"></p> -->
+              <!-- <textarea rows="10" cols="45" placeholder="Enter Preferences" required name="pref"></textarea> -->
+              <p><input value="domain" class="w3-border" type="radio" placeholder="Preference 1" name="sortby">Domain</p>
+              <p><input value="post" class="w3-border" type="radio" placeholder="Preference 2" name="sortby">Post</p>
+              <p><input value="salary" class="w3-border" type="radio" placeholder="Preference 3" name="sortby">Salary</p>
+              <p><input value="hours" class="w3-border" type="radio" placeholder="Preference 4" name="sortby">Working Hours</p>
+              <p><input value="cname" class="w3-border" type="radio" placeholder="Preference 5" name="sortby">Company</p>
+              <p>
+                <button class="w3-button w3-black" type="submit">
+                  <i class="fa"></i> SORT
+                </button>
+              </p>
+            </form>
+          </div>
+          <div class="w3-quarter">
+            <!-- <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Chicago, US</p>
+            <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +00 151515</p>
+            <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p> -->
+            <form action="{{ url_for('home') }}" method="get">
+              <h3>FILTER BY</h3>
+              <p>Domain<br><select name="domain" placeholder="Domain">
+                      <option value="Machine Learning" name="domain">Machine Learning</option>
+                      <option value="Robotics" name="domain">Robotics</option>
+                      <option value="Image Processing" name="domain">Image Processing</option>
+                      <option value="Web Design" name="domain">Web Design</option>
+                      <option value="Bigdata" name="domain">Bigdata</option>
+                    </select>
+                </p>
+                <p>Post<br><select name="post" placeholder="Post">
+                      <option value="Secretary" name="post">Secretary</option>
+                      <option value="Manager" name="post">Manager</option>
+                      <option value="Director" name="post">Director</option>
+                      <option value="COF" name="post">COF</option>
+                      <option value="Intern" name="post">Intern</option>
+                      <option value="Designer" name="post">Designer</option>
+                      <option value="Executive" name="post">Executive</option>
+                      <option value="Developer" name="post">Developer</option>
+                      <option value="Trainee" name="post">Trainee</option>
+                      <option value="Programmer" name="post">Programmer</option>
+                      <option value="Administrator" name="post">Administrator</option>
+                      <option value="Senior Executive" name="post">Senior Executive</option>
+                      <option value="Assistant" name="post">Assistant</option>
+                      <option value="Receptionist" name="post">Receptionist</option>
+                      <option value="Test Engineer" name="post">Test Engineer</option>
+                  </select>
+                </p>
+                <!-- <p>Salary<br><select name="salary" placeholder="Salary">
+                    <option value="1000" name="salary">1,000+</option>
+                    <option value="5000" name="salary">5,000+</option>
+                    <option value="10000" name="salary">10,000+</option>
+                    <option value="50000" name="salary">50,000+</option>
+                    <option value="90000" name="salary">90,000+</option>
+                    <option value="100000" name="salary">1,00,000+</option>
+                    <option value="300000" name="salary">3,00,000+</option>
+                    <option value="500000" name="salary">5,00,000+</option>
+                    </select>
+                </p>
+                <p>Working Hours<br><select name="hours" placeholder="Working Hours">
+                      <option value="1" name="hours">1+</option>
+                      <option value="2" name="hours">2+</option>
+                      <option value="3" name="hours">3+</option>
+                      <option value="4" name="hours">4+</option>
+                      <option value="5" name="hours">5+</option>
+                      <option value="6" name="hours">6+</option>
+                      <option value="7" name="hours">7+</option>
+                      <option value="8" name="hours">8+</option>
+                    </select>
+                </p> -->
+                <p>Company<br><select name="company" placeholder="Company">
+                      <option value="IBM" name="company">IBM</option>
+                      <option value="Infosys" name="company">Infosys</option>
+                      <option value="TCS" name="company">TCS</option>
+                      <option value="HP" name="company">HP</option>
+                      <option value="Wipro" name="company">Wipro</option>
+                      <option value="Cisco" name="company">Cisco</option>
+                      <option value="Motorola" name="company">Motorola</option>
+                      <option value="Delloitte" name="company">Delloitte</option>
+                      <option value="GE" name="company">GE</option>
+                      <option value="Dell" name="company">Dell</option>
+                      <option value="Flipkart" name="company">Flipkart</option>
+                      <option value="Amazon" name="company">Amazon</option>
+                      <option value="Lenovo" name="company">Lenovo</option>
+                      <option value="Unilever" name="company">Unilever</option>
+                      <option value="PWC" name="company">PWC</option>
+                    </select>
+                </p>
+              <p><input class="w3-border" type="checkbox" name="country">Show based on Company</p>
+              <p>
+                <button class="w3-button w3-black" type="submit">
+                  <i class="fa"></i> FILTER
+                </button>
+            </p>
+            </form>
+          </div>
+          <div class="w3-half w3-container">
+            <form action="{{ url_for('job_apply') }}" method="post">
+              <h3>JOBS AVAILABLE</h3>
+              <!-- <div class="w3-container"> -->
+              <table class="w3-table-all">
+                  <thead>
+                    <td>Choice</td>
+                    <td>Job ID</td>
+                    <td>Domain</td>
+                    <td>Post</td>
+                    <td>Salary</td>
+                    <td>Hours</td>
+                    <!-- <td>Company ID</td> -->
+                    <td>Company</td>
+                  </thead>
+                  {% for row in rows %}
+                  <tr>
+
+                    <td ><input class="w3-input w3-border" type="checkbox" name="applyingfor" value={{row[0]}}></td>
+                    <td >{{row[0]}}</td>
+                    <td >{{row[1]}}</td>
+                    <td >{{row[2]}}</td>
+                    <td >{{row[3]}}</td>
+                    <td >{{row[4]}}</td>
+                    <td >{{row[5]}}</td>
+                  </tr>
+                   {% endfor %}
+                </table>
+                <p>
+                <button class="w3-button w3-black" type="submit">
+                  <i class="fa"></i> APPLY
+                </button>
+              </p>
+               <!-- </div> -->
+          </form>
+        </div>
+
+      </div>
+
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-64">
+  <a href="#home" class="w3-button w3-light-grey"><i class="fa"></i>To the top</a>
+
+</footer>
+
+<!-- Add Google Maps -->
+<script>
+
+
+// Modal Image Gallery
+function onClick(element) {
+  document.getElementById("img01").src = element.src;
+  document.getElementById("modal01").style.display = "block";
+  var captionText = document.getElementById("caption");
+  captionText.innerHTML = element.alt;
+}
+
+</script>
+</body>
+</html>

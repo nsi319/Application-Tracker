@@ -29,12 +29,39 @@ from models import *
 def test():
     return redirect(url_for('search'))
 
-
+@app.route("/logout")
+def logout():
+    pass
 @app.route("/home")
 def home():
     user = session['user_logged']
+    rows = [[1,2,3,4,5,6]]
+    
+    sortby = request.args.get('sortby')
+    post = request.args.get('post')
+    company = request.args.get('company')
+    doamin = request.args.get('domain')
+
+    if(sortby == 'salary'):
+        rows = [[2,3,4,5,6,1]]
+    
+    elif sortby == '':
+        pass
+
+    return render_template('home.html',user=user,rows=rows)
+
+@app.route("/job_apply",methods=['post'])
+def job_apply():
     pass
 
+@app.route("/applications")
+def applications():
+    user = session['user_logged']
+    applications = []
+    rows = [[1,2,3,4,5,6]]
+    rows2 = [[1,2,3,4,5,6]]
+    
+    return render_template('applications.html',user=user,rows=rows,rows2=rows2)
 
 @app.route("/login",methods=['GET'])
 def login():
@@ -54,7 +81,7 @@ def login_form():
                 return render_template('login.html',error='wrong username or password')
             else:
                 session['user_logged'] = username
-                return redirect(url_for('search'))
+                return redirect(url_for('home'))
 
 @app.route("/register",methods=['GET'])
 def register():
