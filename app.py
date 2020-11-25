@@ -15,19 +15,18 @@ app.secret_key = 'secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 app.config['UPLOAD_FOLDER']='all_resumes/'
 app.config['SECRET_KEY']='nokey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
-app.config['SQLALCHEMY_BINDS'] = {'user': 'sqlite:///User.db'}
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ats.db'
 #heroku = Heroku(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from models import *
+# from models import Candidate
 # db.app = app
 
 
 @app.route("/")
 def test():
-    return redirect(url_for('search'))
+    return redirect(url_for('company_home'))
 
 
 @app.route("/home")
@@ -89,6 +88,158 @@ def register_form():
 
             conn.execute('insert into user values (?,?,?,?,?,?,?,?,?,?,?)',(id,username,age,name,sex,domain,pref,exp,resume_path,pwd,'candidate'))
             return redirect(url_for('login'))
+
+@app.route("/company_home",methods=['GET','POST'])
+def company_home():
+    # company_name = session['company_name']
+    company_name = "Apple"
+    return render_template('company_home.html', name=company_name, rows=[])
+
+@app.route("/add_job",methods=['GET','POST'])
+def add_job():
+    return render_template('add_job.html')
+
+@app.route('/filter_job/',methods=['GET','POST'])
+def filter_job():
+    con = sql.connect('database.db')
+    cur=con.cursor()
+    cid=session['comp_id']
+    cur.execute("select name from company where company_id=(?)",(cid,))
+    name=cur.fetchone()
+    if request.method == 'POST':
+        domain = request.form['domain']
+        pref=request.form['preferences']
+        exp=request.form['experience']
+        country=request.form['country']
+    if country=="True":
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company, has_permit_for where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and has_permit_for.candidate_id=candidate.candidate_id and has_permit_for.country_id=company.country_id and company.company_id=(?)",(cid,))
+    else:
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) and resume.domain=(?) and resume.experience>=(?) and resume.preferences=(?) ",(cid,domain,exp,pref))
+    rows=cur.fetchall()
+    return render_template('company_home.html',name=name,rows=rows)
+
+@app.route('/sort_job/',methods=['POST','GET'])
+def sort_job():
+    con = sql.connect('database.db')
+    cur=con.cursor()
+    if request.method == 'POST':
+        pref = request.form['pref']
+    print(pref)
+    cid=session['comp_id']
+    cur.execute("select name from company where company_id=(?)",(cid,))
+    name=cur.fetchone()
+    if pref=='Age':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.age",(cid,))
+    elif pref=='Gen':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.sex",(cid,))
+    elif pref=='Domain':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.domain",(cid,))
+    elif pref=='Preferences':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.preferences",(cid,))
+    elif pref=='Experience':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.experience",(cid,))
+    rows=cur.fetchall()
+    for row in rows:
+        print(row)
+    return render_template('company_home.html',name=name,rows=rows)
+
+
+@app.route('/schedule/',methods=['GET','POST'])
+def schedule():
+    con = sql.connect('database.db')
+    cur=con.cursor()
+    cid=session['comp_id']
+    aajkitareek=(datetime.now().date())+timedelta(2)
+    print(aajkitareek)
+    if request.method=='POST':
+        jids=request.form.getlist('pref1')
+        cids=request.form.getlist('pref2')
+        print(jids)
+        print(cids)
+        l=len(jids)
+        status="pending"
+        for i in range(0,l):
+            cur.execute("insert into interviewed_by values(?,?,?,?,?)",(cids[i],jids[i],aajkitareek,"11:00:00",status,))
+        con.commit()
+        cur.execute("select interviewed_by.cand_id as candidate_id,interviewed_by.jo_id as job_id, resume.name as name,interviewed_by.int_date as date, interviewed_by.int_time as time, interviewed_by.status as status from interviewed_by, resume, candidate, job_description, company where resume.resume_id=candidate.resume_id and candidate.candidate_id=interviewed_by.cand_id and job_description.comp_id=company.company_id and interviewed_by.jo_id=job_description.job_id and company.company_id=(?)",(cid,))
+        rows2=cur.fetchall()
+    return render_template("inter.html",rows2=rows2)
+
+@app.route("/company_home",methods=['GET','POST'])
+def company_home():
+    # company_name = session['company_name']
+    company_name = "Apple"
+    return render_template('company_home.html', name=company_name, rows=[])
+
+@app.route("/add_job",methods=['GET','POST'])
+def add_job():
+    return render_template('add_job.html')
+
+@app.route('/filter_job/',methods=['GET','POST'])
+def filter_job():
+    con = sql.connect('database.db')
+    cur=con.cursor()
+    cid=session['comp_id']
+    cur.execute("select name from company where company_id=(?)",(cid,))
+    name=cur.fetchone()
+    if request.method == 'POST':
+        domain = request.form['domain']
+        pref=request.form['preferences']
+        exp=request.form['experience']
+        country=request.form['country']
+    if country=="True":
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company, has_permit_for where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and has_permit_for.candidate_id=candidate.candidate_id and has_permit_for.country_id=company.country_id and company.company_id=(?)",(cid,))
+    else:
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) and resume.domain=(?) and resume.experience>=(?) and resume.preferences=(?) ",(cid,domain,exp,pref))
+    rows=cur.fetchall()
+    return render_template('company_home.html',name=name,rows=rows)
+
+@app.route('/sort_job/',methods=['POST','GET'])
+def sort_job():
+    con = sql.connect('database.db')
+    cur=con.cursor()
+    if request.method == 'POST':
+        pref = request.form['pref']
+    print(pref)
+    cid=session['comp_id']
+    cur.execute("select name from company where company_id=(?)",(cid,))
+    name=cur.fetchone()
+    if pref=='Age':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.age",(cid,))
+    elif pref=='Gen':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.sex",(cid,))
+    elif pref=='Domain':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.domain",(cid,))
+    elif pref=='Preferences':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.preferences",(cid,))
+    elif pref=='Experience':
+        cur.execute("Select applied_for.job_id,applied_for.cand_id as candidate_id, resume.name, resume.age, resume.sex, resume.domain, resume.preferences, resume.experience from applied_for, resume, candidate, job_description, company where applied_for.cand_id=candidate.candidate_id and resume.resume_id=candidate.resume_id and applied_for.job_id=job_description.job_id and job_description.comp_id=company.company_id and company.company_id=(?) order by resume.experience",(cid,))
+    rows=cur.fetchall()
+    for row in rows:
+        print(row)
+    return render_template('company_home.html',name=name,rows=rows)
+
+
+@app.route('/schedule/',methods=['GET','POST'])
+def schedule():
+    con = sql.connect('database.db')
+    cur=con.cursor()
+    cid=session['comp_id']
+    aajkitareek=(datetime.now().date())+timedelta(2)
+    print(aajkitareek)
+    if request.method=='POST':
+        jids=request.form.getlist('pref1')
+        cids=request.form.getlist('pref2')
+        print(jids)
+        print(cids)
+        l=len(jids)
+        status="pending"
+        for i in range(0,l):
+            cur.execute("insert into interviewed_by values(?,?,?,?,?)",(cids[i],jids[i],aajkitareek,"11:00:00",status,))
+        con.commit()
+        cur.execute("select interviewed_by.cand_id as candidate_id,interviewed_by.jo_id as job_id, resume.name as name,interviewed_by.int_date as date, interviewed_by.int_time as time, interviewed_by.status as status from interviewed_by, resume, candidate, job_description, company where resume.resume_id=candidate.resume_id and candidate.candidate_id=interviewed_by.cand_id and job_description.comp_id=company.company_id and interviewed_by.jo_id=job_description.job_id and company.company_id=(?)",(cid,))
+        rows2=cur.fetchall()
+    return render_template("inter.html",rows2=rows2)
 
 @app.route("/search",methods=['GET','POST'])
 def search():
@@ -209,11 +360,15 @@ def result():
             #search on results
             any_key = request.form['rany_key']
             all_key = request.form['rall_key']
+            print("resumes found before and after: ")
+            print(session["resumes"])
             if session['resumes']==[]:
                 resumes = request.form.getlist('found_resumes')
                 session['resumes']=resumes
             else:
                 resumes = session['resumes']
+
+            print(session["resumes"])
             any_key_list = any_key.split(",")
             all_key_list = all_key.split(",")
             found_candidates=[]
@@ -237,7 +392,8 @@ def result():
             if all_key_list:
                 keywords_matched.append("| ")
             keywords_matched.append("| ".join(all_key_list))
-
+            session["total"] = total
+            session["total_final"] = total_final
             if len(filter_list)==0:
                 empty="NO MATCHES FOUND"
                 filter_link=[]
@@ -252,7 +408,9 @@ def result():
                 return render_template('result.html',result=result_list,skills="[ ]",exp = ",",key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link,all=all_key,any=any_key)
 
         else:
+
             session['resumes']=[]
+
             skill = request.form.getlist('skill')
             skill_exp = request.form.getlist('skill_exp')
             skill_cond = request.form['skill_condition']
@@ -403,6 +561,17 @@ def result():
                 val = " [ ] "
             else:
                 val=""
+            
+            to_session = []
+            for res in filter_list:
+                to_session.append(res.resume)
+                
+            session["resumes"] = to_session
+
+            print("resume session")
+            print(session["resumes"])
+            session["total"] = total
+            session["total_final"] = total_final
             if len(filter_list)==0:
                 empty="NO MATCHES FOUND"
                 filter_link=[]
@@ -415,8 +584,20 @@ def result():
                 result_list = rank_resume(filter_list,skill,all_key_list,any_key_list)
                 return render_template('result.html',result=result_list,skills= val + " ".join(list_set_keys),exp = " " + exp_matched + " " ,key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link,all="",any="",from_search=1)
     else:
-        empty="NO MATCHES FOUND"
-        return render_template('result.html',empty_reload=empty,all="",any="",from_search=1)
+        from models import Candidate
+        print("resume session")
+        print(session["resumes"])
+        filter_list=[]
+        for res in session['resumes']:
+            cand = Candidate.query.filter_by(resume=res).first()
+            filter_list.append(cand)
+        filter_link=[]
+        for cand in filter_list:
+            url_link = cand.resume
+            filter_link.append(url_link.split("/")[-1])
+        total = session["total"] 
+        total_final = session["total_final"] 
+        return render_template('result.html',result=filter_list,skills= " ",exp = " " ,key = " " ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link,all="",any="",from_search=1)
 
 
 @app.route("/view/<link>", methods=['GET','POST'])

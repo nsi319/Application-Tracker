@@ -1,5 +1,4 @@
 import sqlite3
-from models import Candidate
 import nltk
 import shutil,os
 

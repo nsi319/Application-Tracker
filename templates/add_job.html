@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<title>W3.CSS Template</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+body, html {
+    height: 100%;
+    line-height: 1.8;
+}
+/* Full height image header */
+.bgimg-1 {
+    background-position: center;
+    background-size: cover;
+    /*background-image: url("30.jpg");*/
+    background-color: black;
+    min-height: 100%;
+}
+.w3-bar .w3-button {
+    padding: 16px;
+}
+</style>
+<body>
+
+<!-- Navbar (sit on top) -->
+<div class="w3-top">
+  <div class="w3-bar w3-white w3-card" id="myNavbar">
+    <a href="/company_home" class="w3-bar-item w3-button w3-wide">Applications</a>
+    <a href="#" class="w3-bar-item w3-button w3-wide">New Job</a>
+    <a href="/search" class="w3-bar-item w3-button w3-wide">Search</a>
+    <!-- Right-sided navbar links -->
+    <div class="w3-right">
+        <a href="admin.html" class="w3-bar-item w3-button"><i class="fa"></i>ADMINISTRATOR LOGIN</a>
+    </div>
+    <!-- Hide right-floated links on small screens and replace them with a menu icon -->
+  </div>
+</div>
+
+
+<!-- Contact Section -->
+<div  id="home" class="w3-container w3-light-grey" style="padding:60px 16px" id="contact">
+  <h3 class="w3-center">ADD A NEW JOB</h3>
+  <!-- <p class="w3-center w3-large">Lets get in touch. Send us a message:</p>
+  <div class="w3-row-padding" style="margin-top:64px"> -->
+    <div class="w3-container">
+      <br>
+      <form action="{{url_for('add_job')}}" method="get">
+        <p><input class="w3-input w3-border" type="text" placeholder="Domain"  name="jdomain"></p>
+        <p><input class="w3-input w3-border" type="text" placeholder="Job Title"  name="jtitle"></p>
+        <p><input class="w3-input w3-border" type="text" placeholder="Job Description"  name="jdesc"></p>
+        <p><input class="w3-input w3-border" type="number" placeholder="Experience"  name="jexp"></p>
+        <p><input class="w3-input w3-border" type="text" placeholder="Working Hours"  name="jwork"></p>
+        <p><input class="w3-input w3-border" type="number" placeholder="Salary"  name="jsalary"></p>
+        <p>Educational Qualification<br><select name="jedu" placeholder="Education" multiple>
+            <option value="BTech" name="edu">BTech</option>
+            <option value="MTech" name="edu">MTech</option>
+              <option value="MSc" name="edu">MSc</option>
+              <option value="BSc" name="edu">BSc</option>
+              <option value="PhD" name="edu">PhD</option>
+              <option value="BBA" name="edu">BBA</option>
+              <option value="MBA" name="edu">MBA</option>
+              <option value="BCom" name="edu">BCom</option>
+              <option value="BDes" name="edu">BDes</option>
+              <option value="MDes" name="edu">MDes</option>
+              <option value="BPharma" name="edu">BPharma</option>
+            </select>
+        </p>
+        <p>
+          <button class="w3-button w3-black" type="submit" style="text-align: center;">
+            <i class="fa"></i> SUBMIT JOB OPENING
+          </button>
+        </p>
+      </form>
+    </div>
+
+<script>
+
+
+// Modal Image Gallery
+function onClick(element) {
+  document.getElementById("img01").src = element.src;
+  document.getElementById("modal01").style.display = "block";
+  var captionText = document.getElementById("caption");
+  captionText.innerHTML = element.alt;
+}
+
+
+</body>
+</html>

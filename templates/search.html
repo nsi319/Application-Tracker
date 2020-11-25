@@ -6,27 +6,56 @@
 		Search 
 	</title>
 
-	<link rel="stylesheet"  type="text/css" href="{{ url_for('static',filename='search.css') }}">
-	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-
-
 </head>
-<body style="font-size: 15px;" id="body">
-	<div class="loading" id="loading_full" style="visibility: collapse;">Loading&#8230;</div>
-<br>
+<style>
+	body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+	body, html {
+		height: 100%;
+		line-height: 1.8;
+	}
+	/* Full height image header */
+	.bgimg-1 {
+		background-position: center;
+		background-size: cover;
+		/*background-image: url("30.jpg");*/
+		background-color: black;
+		min-height: 100%;
+	}
+	.w3-bar .w3-button {
+		padding: 16px;
+	}
+	</style>
 
-    <form class="md-form" id="upload-file" method="post" enctype="multipart/form-data" style="text-align: center;" action="/search">
+<body style="font-size: 15px;" id="body">
+	<div class="w3-top">
+		<div class="w3-bar w3-white w3-card" id="myNavbar">
+		  <a href="/company_home" class="w3-bar-item w3-button w3-wide">Applications</a>
+		  <a href="/add_job" class="w3-bar-item w3-button w3-wide">New Job</a>
+		  <a href="#" class="w3-bar-item w3-button w3-wide">Search</a>
+		  <div class="w3-right">
+			  <a href="admin.html" class="w3-bar-item w3-button"><i class="fa"></i>ADMINISTRATOR LOGIN</a>
+		  </div>
+		</div>
+	  </div>
+	<div class="loading" id="loading_full" style="visibility: collapse;">Loading&#8230;</div>
+
+    <form class="w3-container" id="upload-file" method="post" enctype="multipart/form-data" style="text-align: center; margin-top: 0px;" action="/search">
 		<a style="cursor: pointer;">
 		<div class="file-field">
-		  <div class="btn btn-info btn float-center" style="cursor: pointer;">
+		  <div class="w3-button w3-blue"  style="cursor: pointer;">
 			<span style="cursor: pointer;">Select Resumes</span>
 			<input type="file" name="file" style="width: auto;cursor: pointer;" multiple>
 		  </div>
 		</div>
 		</a>
-		<button class="btn-sm btn-success" type="submit" onclick="loader()" style="margin-top: 10px;">
+		<button class="w3-button w3-green w3-round" type="submit" onclick="loader()" style="margin-top: 10px;">
 			Upload resumes
 			<span class="spinner-border spinner-border-sm" role="status" id="img" aria-hidden="true" style="visibility: collapse;"></span>
 		  </button>
@@ -65,17 +94,16 @@
   </div>
   -->
 
-<form class = "form_search" id="resume_search" action="/result" method="POST">
+<form class = "w3-container" id="resume_search" action="/result" method="POST">
 <div id="input_forsearch">
 <div class="skill_input" style="margin: 30px">
-	<h5>Technical Skills: </h5>
-	<br>
+	<h3>Technical Skills: </h3>
 	<div id="container_skillsearch">
 	<div class="row">
 		<div class="skill_label">
 		<p>Tech Skill 1: </p>
 	    </div>
-	<input name="skill" id="skill" class="form-control" style="width: 30%; height: 35px; text-align: left; margin-left: 10px;"> 
+	<input name="skill" id="skill" class="w3-input w3-border w3-border-blue w3-hover-border-green" style="width: 30%; height: 35px; text-align: left; margin-left: 10px;"> 
 		<!--  
 		 <label style="margin-left: 10px;" for="skill_exp">Experience: </label>
 		 <select name="skill_exp" id="skill_exp" style="width: 25%; margin-left: 10px; height: 35px;" class="form-control"><option value="0">-Any-</option><option value="1">less than 1 year</option><option value="2">1 year &amp; above</option><option value="3">2 years &amp; above</option><option value="4">3 years &amp; above</option><option value="5">4 years &amp; above</option><option value="6">5 years &amp; above</option></select> -->
@@ -84,14 +112,14 @@
     </div>
 <div class="add_moreskills"></div>
 	<div style="margin-top: 10px;">
-		<a href="#" onclick="generateSkill();">Add more Technical Skills</a>
+		<a href="#"  class="w3-text-purple" style="text-decoration: underline;" onclick="generateSkill();">Add more Technical Skills</a>
 	</div>
    <br>
 	<div class="row">
-		<label>Show Resumes with: </label>
+		<label>Show Candidates with: </label>
 	<span class="font10">
 		<div class="input-group">
-		<input name="skill_condition" type="radio" class="radio" style="margin-top:3px; margin-left: 5px; margin-right: 5px;" value="0" checked="">Any of the Skills
+		<input name="skill_condition"  type="radio" class="radio" style="margin-top:3px; margin-left: 5px; margin-right: 5px;" value="0" checked="">Any of the Skills
 		<input name="skill_condition" type="radio" class="radio" style="margin-top:3px; margin-left: 5px;margin-right: 5px;" value="1">All the Skills
 		<span style="margin-left:20px;"><input name="skill_full" id="skill_full" type="checkbox" class="checkbox" value="1" style="margin-right: 5px;">Search Technical Skills in the Entire Resume  
 		</span>
@@ -100,25 +128,25 @@
 		</div>
 </div>
 	<div class="expyearinput" style="margin-left: 30px; border: 5px; border-color: black;">
-		<h5>Years of Experience: </h5>
+		<h3>Years of Experience: </h3>
 		<br>
 		<div class="row" style="vertical-align: middle;" >
 		<label for="min_expyear">Total Experience:</label>
-		<input type="number" name="min_expyear" class="form-control" id="min_expyear" size="6" maxlength="5" value="" style="width: 100px; margin-left: 10px;">
+		<input type="number" name="min_expyear"   id="min_expyear" size="6" maxlength="5" value="" style="width: 100px; margin-left: 10px;">
 		<label for="max_expyear" style="margin-left: 10px; margin-right: 10px;">to</label>
-		<input type="number" name="max_expyear" class="form-control" id="max_expyear" size="6" maxlength="5" value="" style="width: 100px;" > <label>(in years)</label>
+		<input type="number" name="max_expyear" id="max_expyear" size="6" maxlength="5" value="" style="width: 100px;" > <label>(in years)</label>
 		</div>
 	</div>
 	<div class="keywordinput" style="margin: 30px; border: 5px; border-color: black;">
-		<h5>Other Keywords: </h5>
+		<h3>Other Keywords: </h3>
 		<br>
 		<div class="row">
 		<div class="input-group">
 		<label for="any_key">Any of the keywords:</label>
-		<input type="text" name="any_key" class="form-control" id="any_key" value="" style="margin-left: 10px; margin-right: 10px; width: 30%;"> 
+		<input type="text" name="any_key" class="w3-input w3-border w3-border-blue w3-hover-border-green"id="any_key" value="" style="margin-left: 10px; margin-right: 10px; width: 30%;"> 
 		<br>
-		<label for="all_key">All the keywords:</label>
-		<input type="text" name="all_key" class="form-control" id="all_key"  value="" style="margin-left: 10px; margin-right: 10px; width: 30%;"> 
+		<label for="all_key">All the keywords:   </label>
+		<input type="text" name="all_key" class="w3-input w3-border w3-border-blue w3-hover-border-green" id="all_key"  value="" style="margin-left: 10px; margin-right: 10px; width: 30%;"> 
 		</div>
 		</div>
 		</div>
@@ -127,7 +155,7 @@
 <input type="hidden" name="total" class = "total" id="total" value="1">
 <div class="button_center" style="text-align: center;">
 
-<button type="submit" form="resume_search" value="Submit"  class='btn-lg btn-dark' onclick="full_load()">Find Resumes</button>
+<button type="submit" form="resume_search" value="Submit" style="margin-bottom: 10px;"  class="w3-button w3-black w3-round" onclick="full_load()">Find Candidates</button>
 </div>
 </form>
 
