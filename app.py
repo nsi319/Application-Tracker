@@ -14,21 +14,51 @@ app = Flask(__name__)
 app.secret_key = 'secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 app.config['UPLOAD_FOLDER']='all_resumes/'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:nopassword@localhost:3306/resumedb'
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://alucdujzotschm:0ecac16d3bb006b5b6ea2d27f335b437b669d54798e92b2f63b6fcfde122996b@ec2-3-231-46-238.compute-1.amazonaws.com:5432/dc9iulcje872ba'
 app.config['SECRET_KEY']='nokey'
-#app.config.from_object(os.environ['APP_SETTINGS'])
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
 #heroku = Heroku(app)
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+
+from models import User,Candidate
 # db.app = app
-# migrate = Migrate(app, db)
+
 
 
 
 @app.route("/")
 def test():
     return redirect(url_for('search'))
+
+@app.route("/login",methods=['GET'])
+def login():
+    return render_template('login.html')
+
+@app.route("/login_form",methods=['POST'])
+def login_form():
+    if request.method=='POST':
+        username = request.form.get("username")
+        password = request.form.get("password")
+        print(username)
+        
+        '''
+            do things regarding db
+        '''
+        user = User(id=1,username=username,password=password)
+        db.session.add(user)
+        db.session.commit()
+
+        return redirect(url_for('login'))
+
+@app.route("/register",methods=['GET'])
+def register():
+    if request.method=='GET':
+        return render_template('register.html')
+        
+@app.route("/register_form",methods=['POST'])
+def register_form():
+    if request.method=='POST':
+        return render_template('register.html')
 
 @app.route("/search",methods=['GET','POST'])
 def search():
