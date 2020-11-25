@@ -4,19 +4,30 @@ import nltk
 import shutil,os
 
 
-conn = sqlite3.connect('Candidate.db')
+conn = sqlite3.connect('ats.db')
 print("Opened Candidate database successfully")
-conn.execute('DROP TABLE candidate')
-conn.execute('CREATE TABLE candidate (phone TEXT,email TEXT,linkedin TEXT,exp_years TEXT, duration TEXT,summary TEXT,skills TEXT,experience TEXT,education TEXT,extra TEXT,awards,filename TEXT, complete_resume TEXT, resume STRING(500) PRIMARY KEY)')
+
+
+conn.execute('CREATE TABLE if not exists candidate (phone TEXT,email TEXT,linkedin TEXT,exp_years TEXT, duration TEXT,summary TEXT,skills TEXT,experience TEXT,education TEXT,extra TEXT,awards,filename TEXT, complete_resume TEXT, resume STRING(500) PRIMARY KEY)')
 print("Candidate Table created successfully")
-conn.close();
 
+conn.execute('''
+create table user(
+  id int primary key,
+  username varchar(100),
+  age varchar(2),
+  name varchar(100),
+  sex varchar(1),
+  domain varchar(20),
+  pref varchar(30),
+  exp varchar(30),
+  resume_path varchar(200),
+  password varchar(100),
+  usertype varchar(100)
+)''')
 
-conn = sqlite3.connect('User.db')
-print("Opened User database successfully")
-conn.execute('DROP TABLE user')
-conn.execute('CREATE TABLE user (id INT(100) PRIMARY KEY ,username TEXT,password TEXT,usertype TEXT)')
-print("User Table created successfully")
+print("users table created")
+
 conn.close()
 
 dire = 'assets'

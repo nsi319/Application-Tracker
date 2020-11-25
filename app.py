@@ -8,7 +8,7 @@ from flask_migrate import Migrate
 from flask_heroku import Heroku
 import shutil
 import nltk
-
+import sqlite3
 
 app = Flask(__name__)
 app.secret_key = 'secret'
@@ -25,11 +25,16 @@ from models import *
 # db.app = app
 
 
-
-
 @app.route("/")
 def test():
     return redirect(url_for('search'))
+
+
+@app.route("/home")
+def home():
+    user = session['user_logged']
+    pass
+
 
 @app.route("/login",methods=['GET'])
 def login():
@@ -38,14 +43,18 @@ def login():
 @app.route("/login_form",methods=['POST'])
 def login_form():
     if request.method=='POST':
-        username = request.form.get("username")
-        password = request.form.get("password")
-        print(username)
-        user = User(id=1,username=username,password=password, usertype="candidate")
-        db.session.add(user)
-        db.session.commit()
-        
-        return redirect(url_for('login'))
+        with sqlite3.connect('ats.db') as conn:
+            username = request.form.get("username")
+            password = request.form.get("pwd")
+            print(username,password)
+            res = conn.execute('select password from user where username = ?',(username,)).fetchall()
+            print(res)
+            if res==[] or res[0][0]!=password:
+                print('error')
+                return render_template('login.html',error='wrong username or password')
+            else:
+                session['user_logged'] = username
+                return redirect(url_for('search'))
 
 @app.route("/register",methods=['GET'])
 def register():
@@ -55,7 +64,31 @@ def register():
 @app.route("/register_form",methods=['POST'])
 def register_form():
     if request.method=='POST':
-        return render_template('register.html')
+        with sqlite3.connect('ats.db') as conn:
+            username = request.form.get("username")
+            pwd = request.form.get("pwd")
+            name = request.form.get("name")
+            age = request.form.get("age")
+            sex = request.form.get("sex")
+            domain = request.form.get("domain")
+            pref = request.form.get("pref")
+            exp = request.form.get("exp")
+            edu = request.form.get("edu")   #assume edu = exp
+            resume_file = request.files['resume_file']
+            
+            print(pref)
+            print(resume_file.filename)
+            resume_file.save('./all_resumes/'+resume_file.filename)
+            resume_path = './all_resumes/'+resume_file.filename
+
+            res = conn.execute('select max(id) as mx from user').fetchall()           
+            print(res)
+            id = 1
+            if(res[0]!=None):
+                id=res[0][0]+1
+
+            conn.execute('insert into user values (?,?,?,?,?,?,?,?,?,?,?)',(id,username,age,name,sex,domain,pref,exp,resume_path,pwd,'candidate'))
+            return redirect(url_for('login'))
 
 @app.route("/search",methods=['GET','POST'])
 def search():

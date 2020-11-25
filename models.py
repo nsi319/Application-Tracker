@@ -26,6 +26,13 @@ class User(db.Model):
         __tablename__ = "user"
         id = db.Column(db.Integer,nullable=False,primary_key=True)
         username = db.Column(db.Text,nullable=False)
+        age = db.Column(db.Text)
+        name = db.Column(db.Text)
+        sex = db.Column(db.Text)
+        domain = db.Column(db.Text)
+        pref = db.Column(db.Text)
+        exp = db.Column(db.Text)
+        resume_path = db.Column(db.Text)
         password = db.Column(db.Text,nullable=False)
         usertype = db.Column(db.Text,nullable=False)
 
