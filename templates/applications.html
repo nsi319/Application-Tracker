@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+body, html {
+    height: 100%;
+    line-height: 1.8;
+}
+/* Full height image header */
+.bgimg-1 {
+    background-position: center;
+    background-size: cover;
+    background-image: url("cat.jpg");
+    min-height: 100%;
+}
+.w3-bar .w3-button {
+    padding: 16px;
+}
+</style>
+<body>
+    <div class="w3-top">
+        <div class="w3-bar w3-white w3-card" id="myNavbar">
+          <a href="{{ url_for('home') }}" class="w3-bar-item w3-button w3-wide">HOME</a>
+          <a href="{{ url_for('applications') }}" class="w3-bar-item w3-button w3-wide">YOUR APPLICATIONS</a>
+          <!-- Right-sided navbar links -->
+          <div class="w3-right">
+              <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button"><i class="fa"></i>LOGOUT</a>
+          </div>
+          <!-- Hide right-floated links on small screens and replace them with a menu icon -->
+  
+  
+        </div>
+      </div>
+
+      <!-- Contact Section -->
+      <div class=" w3-container w3-light-grey" style="padding:60px 16px" id="contact">
+        <h1 class="w3-center" id="home">HELLO {{user}} </h1>
+
+
+        <div class="w3-row-padding" style="margin-top:10px">
+        <!-- <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Chicago, US</p>
+        <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +00 151515</p>
+        <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p> -->
+        <br>
+        <!-- <form action="" target="_blank"> -->
+            <div class="w3-half w3-container">
+                <p class="w3-center" style="margin-right:10px">
+                    <button class="w3-button w3-black" >
+                        <i class="fa"></i> APPLIED FOR
+                    </button>
+                    <table class="w3-table-all">
+                      <thead>
+                        <td>Job ID</td>
+                        <td>Domain</td>
+                        <td>Post</td>
+                        <td>Salary</td>
+                        <td>Hours</td>
+                        <!-- <td>Company ID</td> -->
+                        <td>Company</td>
+                      </thead>
+                        {% for row in rows %}
+                      <tr>
+                        <td >{{row[0]}}</td>
+                        <td >{{row[1]}}</td>
+                        <td >{{row[2]}}</td>
+                        <td >{{row[3]}}</td>
+                        <td >{{row[4]}}</td>
+                        <td >{{row[5]}}</td>
+                      </tr>
+                       {% endfor %}
+                    </table>
+                </p>
+            </div>
+            <div class="w3-half w3-container">
+                <p class="w3-center">
+                    <button class="w3-button w3-black" type="submit">
+                        <i class="fa"></i> SELECTED FOR
+                    </button>
+                  <table class="w3-table-all">
+                        <thead>
+                          <td>Job ID</td>
+                          <td>Domain</td>
+                          <td>Post</td>
+                          <td>Salary</td>
+                          <td>Hours</td>
+                          <!-- <td>Company ID</td> -->
+                          <td>Company</td>
+                        </thead>
+                          {% for row2 in rows2 %}
+                        <tr>
+                          <td >{{row2[0]}}</td>
+                          <td >{{row2[1]}}</td>
+                          <td >{{row2[2]}}</td>
+                          <td >{{row2[3]}}</td>
+                          <td >{{row2[4]}}</td>
+                          <td >{{row2[5]}}</td>
+                        </tr>
+                         {% endfor %}
+                      </table>
+                </p>
+            </div>
+        <!-- </form> -->
+      </div>
+<!-- Footer -->
+<footer class="w3-center w3-black w3-padding-64">
+  <a href="#home" class="w3-button w3-light-grey"><i class="fa"></i>To the top</a>
+
+</footer>
+
+<!-- Add Google Maps -->
+<script>
+
+// Modal Image Gallery
+function onClick(element) {
+  document.getElementById("img01").src = element.src;
+  document.getElementById("modal01").style.display = "block";
+  var captionText = document.getElementById("caption");
+  captionText.innerHTML = element.alt;
+}
+
+
+// Toggle between showing and hiding the sidebar when clicking the menu icon
+var mySidebar = document.getElementById("mySidebar");
+
+function w3_open() {
+    if (mySidebar.style.display === 'block') {
+        mySidebar.style.display = 'none';
+    } else {
+        mySidebar.style.display = 'block';
+    }
+}
+
+// Close the sidebar with the close button
+function w3_close() {
+    mySidebar.style.display = "none";
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBu-916DdpKAjTmJNIgngS6HL_kDIKU0aU&callback=myMap"></script>
+<!--
+To use this code on your website, get a free API key from Google.
+Read more at: https://www.w3schools.com/graphics/google_maps_basic.asp
+-->
+
+</body>
+</html>
