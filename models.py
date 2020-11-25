@@ -22,18 +22,10 @@ class Candidate(db.Model):
     
 
 class User(db.Model):
-        __tablename__ = "users"
+        __bind_key__ = 'user'
+        __tablename__ = "user"
         id = db.Column(db.Integer,nullable=False,primary_key=True)
         username = db.Column(db.Text,nullable=False)
         password = db.Column(db.Text,nullable=False)
         usertype = db.Column(db.Text,nullable=False)
 
-def init_db():
-    db.create_all()
-    # Create a test user
-    new_user = User(1,'a@a.com', 'aaaaaaaa')
-    db.session.add(new_user)
-    db.session.commit()
-
-if __name__ == '__main__':
-    init_db()

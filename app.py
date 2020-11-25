@@ -16,11 +16,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 app.config['UPLOAD_FOLDER']='all_resumes/'
 app.config['SECRET_KEY']='nokey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
+app.config['SQLALCHEMY_BINDS'] = {'user': 'sqlite:///User.db'}
 #heroku = Heroku(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from models import User,Candidate
+from models import *
 # db.app = app
 
 
@@ -40,14 +41,10 @@ def login_form():
         username = request.form.get("username")
         password = request.form.get("password")
         print(username)
-        
-        '''
-            do things regarding db
-        '''
-        user = User(id=1,username=username,password=password)
+        user = User(id=1,username=username,password=password, usertype="candidate")
         db.session.add(user)
         db.session.commit()
-
+        
         return redirect(url_for('login'))
 
 @app.route("/register",methods=['GET'])
