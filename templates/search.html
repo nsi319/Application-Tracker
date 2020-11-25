@@ -40,7 +40,7 @@
 		  <a href="/add_job" class="w3-bar-item w3-button w3-wide">New Job</a>
 		  <a href="#" class="w3-bar-item w3-button w3-wide">Search</a>
 		  <div class="w3-right">
-			  <a href="admin.html" class="w3-bar-item w3-button"><i class="fa"></i>ADMINISTRATOR LOGIN</a>
+            <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button"><i class="fa"></i>LOGOUT</a>
 		  </div>
 		</div>
 	  </div>
@@ -196,7 +196,6 @@ function generateSkill() {
 function loader() {
 	document.getElementById("img").style.visibility="visible"
 	document.getElementById("body").style.pointerEvents="none"
-
 }
 function full_load() {
 		document.getElementById("loading_full").style.visibility="visible"

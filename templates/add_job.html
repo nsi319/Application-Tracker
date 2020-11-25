@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html>
-<title>W3.CSS Template</title>
+<title>Add Job</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style.css">
@@ -35,7 +35,7 @@ body, html {
     <a href="/search" class="w3-bar-item w3-button w3-wide">Search</a>
     <!-- Right-sided navbar links -->
     <div class="w3-right">
-        <a href="admin.html" class="w3-bar-item w3-button"><i class="fa"></i>ADMINISTRATOR LOGIN</a>
+        <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button"><i class="fa"></i>LOGOUT</a>
     </div>
     <!-- Hide right-floated links on small screens and replace them with a menu icon -->
   </div>
@@ -49,10 +49,11 @@ body, html {
   <div class="w3-row-padding" style="margin-top:64px"> -->
     <div class="w3-container">
       <br>
-      <form action="{{url_for('add_job')}}" method="get">
+      <form action="/add_job" method="POST">
         <p><input class="w3-input w3-border" type="text" placeholder="Domain"  name="jdomain"></p>
         <p><input class="w3-input w3-border" type="text" placeholder="Job Title"  name="jtitle"></p>
         <p><input class="w3-input w3-border" type="text" placeholder="Job Description"  name="jdesc"></p>
+        <p><input class="w3-input w3-border" type="text" placeholder="Skills"  name="jskills"></p>
         <p><input class="w3-input w3-border" type="number" placeholder="Experience"  name="jexp"></p>
         <p><input class="w3-input w3-border" type="text" placeholder="Working Hours"  name="jwork"></p>
         <p><input class="w3-input w3-border" type="number" placeholder="Salary"  name="jsalary"></p>

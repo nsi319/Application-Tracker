@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html>
+    <title>Company Home</title>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="style.css">
@@ -32,7 +34,7 @@ body, html {
         <a href="/add_job" class="w3-bar-item w3-button w3-wide">New Job</a>
         <a href="/search" class="w3-bar-item w3-button w3-wide">Search</a>
         <div class="w3-right">
-            <a href="admin.html" class="w3-bar-item w3-button"><i class="fa"></i>ADMINISTRATOR LOGIN</a>
+            <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button"><i class="fa"></i>LOGOUT</a>
         </div>
       </div>
     </div>
@@ -43,7 +45,8 @@ body, html {
         <h1 class="w3-center" id="home">Welcome {{name}} Admin!</h1>
         <!-- <p class="w3-center w3-large">Lets get in touch. Send us a message:</p> -->
         <div class="w3-row-padding" style="margin-top:64px">
-            <div class="w3-quarter">
+          <div class="w3-third">
+            <div class="w3-half">
               <!-- <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Chicago, US</p>
               <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +00 151515</p>
               <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p> -->
@@ -62,7 +65,7 @@ body, html {
                 </p>
               </form>
             </div>
-            <div class="w3-quarter">
+            <div class="w3-half">
               <form action="{{ url_for('filter_job') }}" method="post">
                 <h3>FILTER BY</h3>
                 <p>Domain<br><select name="domain" placeholder="Domain">
@@ -71,24 +74,6 @@ body, html {
                     <option value="Image Processing" name="domain">Image Processing</option>
                     <option value="Web Design" name="domain">Web Design</option>
                     <option value="Bigdata" name="domain">Bigdata</option>
-                    </select>
-                </p>
-                <p>Preferences<br><select name="preferences" placeholder="Preference">
-                    <option value="Secretary" name="preferences">Secretary</option>
-                    <option value="Manager" name="preferences">Manager</option>
-                    <option value="Director" name="preferences">Director</option>
-                    <option value="COF" name="preferences">COF</option>
-                    <option value="Intern" name="preferences">Intern</option>
-                    <option value="Designer" name="preferences">Designer</option>
-                    <option value="Executive" name="preferences">Executive</option>
-                    <option value="Developer" name="preferences">Developer</option>
-                    <option value="Trainee" name="preferences">Trainee</option>
-                    <option value="Programmer" name="preferences">Programmer</option>
-                    <option value="Administrator" name="preferences">Administrator</option>
-                    <option value="Senior Executive" name="preferences">Senior Executive</option>
-                    <option value="Assistant" name="preferences">Assistant</option>
-                    <option value="Receptionist" name="preferences">Receptionist</option>
-                    <option value="Test Engineer" name="preferences">Test Engineer</option>
                     </select>
                 </p>
                 <p>Experience<br><select name="experience" placeholder="Experience">
@@ -101,8 +86,6 @@ body, html {
                       <option value="10" name="experience">10+ years</option>
                     </select>
                 </p>
-                <p><input class="w3-border" type="checkbox"  name="country" value="True">Show based on country permits</p>
-
                 <p>
                   <button class="w3-button w3-black" type="submit">
                     <i class="fa"></i> FILTER
@@ -116,46 +99,47 @@ body, html {
                 </p> -->
               </form>
             </div>
-            <div class="w3-half w3-container">
+          </div>
+            <div class="w3-twothird w3-container">
             <!-- <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Chicago, US</p>
             <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +00 151515</p>
             <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p> -->
-            <form action="{{url_for('schedule')}}" method="post">
-              <h3>VIEW JOB APPLICATIONS</h3>
-            <table class="w3-table-all">
+            <form action="/company_home" method="post">
+              <h3>JOB OPENINGS</h3>
+            <table class="w3-striped w3-border w3-bordered w3-centered">
               <thead>
-                <th>Choice</th>
-                <th>Job ID</th>
-                <th>Candidate ID</th>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Sex</th>
-                <th>Domain</th>
-                <th>Preferences</th>
-                <th>Experience</th>
+                <!-- <th>Choice</th> -->
+                <th style="padding:0 15px;">ID</th>
+                <th style="padding:0 15px;">Domain</th>
+                <th style="padding:0 15px;">Job Title</th>
+                <th style="padding:0 15px;">Years of Experience</th>
+                <th style="padding:0 15px;">Date Posted</th>
+                <th style="padding:0 15px;">Applicants</th>
             </thead>
             {% for row in rows %}
               <tr>
-                <td ><input class="w3-input w3-border" type="checkbox"  name="pref1" value={{row[0]}}></td>
-                <td ><input class="w3-input w3-border" type="checkbox"  name="pref2" value={{row[1]}}></td>
-                <!-- <td><input type="hidden" name="pref2" value="{{row[1]}}"/></td> -->
-                <td >{{row[0]}}</td>
-                <td >{{row[1]}}</td>
-                <td >{{row[2]}}</td>
-                <td >{{row[3]}}</td>
-                <td >{{row[4]}}</td>
-                <td >{{row[5]}}</td>
-                <td >{{row[6]}}</td>
-                <td >{{row[7]}}</td>
+                <!-- <td ><input class="w3-input w3-border" type="checkbox"  name="pref1" value={{row[0]}}></td> -->
+                <!-- <td ><input class="w3-input w3-border" type="checkbox"  name="pref2" value={{row[1]}}></td> -->
+                <td >{{row[0]}}  </td>
+                <td >{{row[1]}}  </td>
+                <td >{{row[2]}}  </td>
+                <td >{{row[3]}}  </td>
+                <td >{{row[4]}}  </td>
+                <td >{{row[5]}}  </td>
+                <td><input type="hidden" name="job_id" value="{{row[0]}}"/></td>
+
+              <td><button class="w3-button w3-green w3-round" name="view" style="width: min-content;">
+                <a href="{{url_for('applicant',job=row[0])}}">View</a>
+              </button></td>
               </tr>
               {% endfor %}
             </table>
 
-             <p>
+             <!-- <p>
                 <button class="w3-button w3-black" type="submit">
                   <i class="fa"></i> CALL FOR INTERVIEW
                 </button>
-              </p>
+              </p> -->
                <!-- </div> -->
           </form>
           <!-- <div class="w3-half">

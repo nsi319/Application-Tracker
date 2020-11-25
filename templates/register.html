@@ -42,12 +42,31 @@ body, html {
 <!-- Contact Section -->
 <div  id="home" class="w3-container w3-light-grey" style="padding:60px 16px" id="contact">
   <h3 class="w3-center">REGISTER</h3>
+
   <!-- <p class="w3-center w3-large">Lets get in touch. Send us a message:</p>
   <div class="w3-row-padding" style="margin-top:64px"> -->
     <div class="w3-container">
+      <h3>FOR CANDIDATES</h3>
       <br>
-      <form action="{{url_for('register_form')}}" method="POST" enctype="multipart/form-data">
-        <h3>FOR CANDIDATES</h3>
+      <form class="w3-container w3-row" id="upload-file" method="POST" enctype="multipart/form-data" style="text-align: left;; margin-top: 0px;" action="{{url_for('upload_resume')}}">
+        <a style="cursor: pointer;">
+        <div class="file-field">
+          <div class="w3-button w3-blue"  style="cursor: pointer;">
+          <span style="cursor: pointer;">Select your resume</span>
+          <input type="file" name="file" style="width: auto;cursor: pointer;" multiple>
+          </div>
+        </div>
+        </a>
+        <button class="w3-button w3-green w3-round" type="submit" form="upload-file" style="margin-top: 10px;">
+          Upload resume
+          <span class="spinner-border spinner-border-sm" role="status" id="img" aria-hidden="true" style="visibility: collapse;"></span>
+          </button>
+          {% if total %}
+              <p style="text-align: left;"><b>{{total}}</b></p>
+          {% endif %}
+        </form>
+
+      <form action="{{url_for('register_form')}}" method="POST" enctype="multipart/form-data">      
         <p><input class="w3-input w3-border" type="text" placeholder="Username"  name="username"></p>
         <p><input class="w3-input w3-border" type="password" placeholder="Password"  name="pwd"></p>
         <!-- <p><input class="w3-input w3-border" type="text" placeholder="Company ID"  name="comp_id"></p> -->
@@ -58,23 +77,23 @@ body, html {
         <p><input class="w3-input w3-border" type="text" placeholder="Preferences"  name="pref"></p>
         <p><input class="w3-input w3-border" type="text" placeholder="Experience"  name="exp"></p>
         <p><input class="w3-input w3-border" type="text" placeholder="Education" name="edu"></p>
-        <p>select resume from your deivce<input class="w3-input w3-border" type="file" name="resume_file"></input></p>
-        <p>
-          <button class="w3-button w3-black" type="submit">
+        {% if path %}
+              <input type="hidden" name="path" value="{{path}}">
+          {% endif %}
+            <p>
+          <button class="w3-button w3-round w3-black" type="submit">
             <i class="fa"></i> SUBMIT
           </button>
         </p>
       </form>
     </div>
 
-<!-- Footer -->
-<footer class="w3-center w3-black w3-padding-64">
-  <a href="#" class="w3-button w3-light-grey"><i class="fa"></i>To the top</a>
-
-</footer>
 
 
 <script>
+  function loader() {
+	document.getElementById("img").style.visibility="visible"
+}
 
 
 // Modal Image Gallery

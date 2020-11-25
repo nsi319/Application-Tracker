@@ -54,8 +54,6 @@ def replacesub(input, pattern, replaceWith):
     return input.replace(pattern, replaceWith)
 
 
-
-
 def get_details_from_path(path):
     names=[]
     resume_list=[]
@@ -70,6 +68,8 @@ def get_details_from_path(path):
                 parsed = parser.from_file(filename)
                 text = parsed["content"]  # To get the content of the file
                 #text = str(text1)
+                print("PARSED")
+                print(text)
                 current = filename.lower().split("/")[-1].split(".")[0]
                 filenames.append(filename)
                 names.append(current)
@@ -82,6 +82,30 @@ def get_details_from_path(path):
             except:
                 return -1,-1,-1,-1
             num = num + 1
+    
+    return resume_list,names,num,filenames
+
+def get_details_from_file(file):
+    names=[]
+    resume_list=[]
+    filenames=[]
+    num=0
+    try:
+        parsed = parser.from_file(file)
+        text = parsed["content"]  # To get the content of the file
+        #text = str(text1)
+        current = filename.lower().split("/")[-1].split(".")[0]
+        filenames.append(filename)
+        names.append(current)
+        #print("Loading " + str(num) + " " + str(current))
+        final_str = ''
+        for char in parsed["content"].__str__():
+            if char in string.printable or char=='\n':
+                final_str += char
+        resume_list.append(final_str)
+    except:
+        return -1,-1,-1,-1
+    num = num + 1
     
     return resume_list,names,num,filenames
 
@@ -446,6 +470,15 @@ def get_secondary_details(resume_list,names):
     
     return dict(zip(["summary","skills","experience","education","extra","awards"],[summary_text,tech_skill_text,work_exp_text,education_text,extra_text,awards_text]))    
 
+
+def get_resume_details_from_file(file):
+    resume_list,names,total,filenames = get_details_from_file(file)
+    if resume_list!=-1:
+        dict1 = get_primary_details(resume_list,names)
+        dict2 = get_secondary_details(resume_list,names)
+        return dict(zip(["dict1","dict2","total","filename","complete"],[dict1,dict2,total,filenames,resume_list]))
+    else:
+        return -1
 
 def get_resume_details(path):
     resume_list,names,total,filenames = get_details_from_path(path)
