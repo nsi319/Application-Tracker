@@ -57,7 +57,7 @@ body, html {
               <h3>SORT BY</h3>
                <!-- <p><input class="w3-input w3-border" type="textarea" placeholder="Enter Preferences" required name="pref"></p> -->
               <!-- <textarea rows="10" cols="45" placeholder="Enter Preferences" required name="pref"></textarea> -->
-              <p><input value="domain" class="w3-border" type="radio" placeholder="Preference 1" name="sortby">Domain</p>
+              <p><input value="exp" class="w3-border" type="radio" placeholder="Preference 1" name="sortby">Experience</p>
               <p><input value="post" class="w3-border" type="radio" placeholder="Preference 2" name="sortby">Post</p>
               <p><input value="salary" class="w3-border" type="radio" placeholder="Preference 3" name="sortby">Salary</p>
               <p><input value="hours" class="w3-border" type="radio" placeholder="Preference 4" name="sortby">Working Hours</p>
@@ -76,27 +76,24 @@ body, html {
             <form action="{{ url_for('home') }}" method="get">
               <h3>FILTER BY</h3>
               <p>Domain<br><select name="domain" placeholder="Domain">
-                      <option value="Machine Learning" name="domain">Machine Learning</option>
+                      <option value="machine learning" name="domain">machine learning</option>
                       <option value="Robotics" name="domain">Robotics</option>
                       <option value="Image Processing" name="domain">Image Processing</option>
                       <option value="Web Design" name="domain">Web Design</option>
-                      <option value="Bigdata" name="domain">Bigdata</option>
+                      <option value="Computer Science" name="domain">Computer Science</option>
                     </select>
                 </p>
                 <p>Post<br><select name="post" placeholder="Post">
-                      <option value="Secretary" name="post">Secretary</option>
-                      <option value="Manager" name="post">Manager</option>
-                      <option value="Director" name="post">Director</option>
                       <option value="COF" name="post">COF</option>
                       <option value="Intern" name="post">Intern</option>
                       <option value="Designer" name="post">Designer</option>
                       <option value="Executive" name="post">Executive</option>
-                      <option value="Developer" name="post">Developer</option>
+                      <option value="Software Developer" name="post">Software Developer</option>
                       <option value="Trainee" name="post">Trainee</option>
                       <option value="Programmer" name="post">Programmer</option>
                       <option value="Administrator" name="post">Administrator</option>
                       <option value="Senior Executive" name="post">Senior Executive</option>
-                      <option value="Assistant" name="post">Assistant</option>
+                      <option value="analyst" name="post">analyst</option>
                       <option value="Receptionist" name="post">Receptionist</option>
                       <option value="Test Engineer" name="post">Test Engineer</option>
                   </select>
@@ -123,24 +120,6 @@ body, html {
                       <option value="8" name="hours">8+</option>
                     </select>
                 </p> -->
-                <p>Company<br><select name="company" placeholder="Company">
-                      <option value="Oracle" name="company">Oracle</option>
-                      <option value="DE SHAW" name="company">DE SHAW</option>
-                      <option value="Google" name="company">Google</option>
-                      <option value="Amazon" name="company">Amazon</option>
-                      <option value="HP" name="company">HP</option>
-                      <option value="Wipro" name="company">Wipro</option>
-                      <option value="Cisco" name="company">Cisco</option>
-                      <option value="Motorola" name="company">Motorola</option>
-                      <option value="Delloitte" name="company">Delloitte</option>
-                      <option value="GE" name="company">GE</option>
-                      <option value="Dell" name="company">Dell</option>
-                      <option value="Flipkart" name="company">Flipkart</option>
-                      <option value="Lenovo" name="company">Lenovo</option>
-                      <option value="Unilever" name="company">Unilever</option>
-                      <option value="PWC" name="company">PWC</option>
-                    </select>
-                </p>
               <p><input class="w3-border" type="checkbox" name="country">Show based on Company</p>
               <p>
                 <button class="w3-button w3-black" type="submit">

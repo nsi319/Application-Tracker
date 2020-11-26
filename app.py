@@ -38,11 +38,7 @@ def home():
         post = request.args.get('post')
         company = request.args.get('company')
         doamin = request.args.get('domain')
-        if(sortby == 'salary'):
-            rows = [[2,3,4,5,6,1]]
-        
-        elif sortby == '':
-            pass
+
 
         with sqlite3.connect('ats.db') as conn:
             res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id)',(user_id,)).fetchall()
@@ -50,6 +46,14 @@ def home():
             if res==[]:
                 return render_template('home.html', user=user)
             else:
+                if sortby == 'salary':
+                    res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by salary desc',(user_id,)).fetchall()
+                elif sortby == 'hours':
+                    res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by working_hours desc',(user_id,)).fetchall()
+                elif sortby == 'exp':
+                    res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by experience desc',(user_id,)).fetchall()
+                elif doamin:
+                    res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) and domain=? and title=?',(user_id,doamin,post)).fetchall()
                 return render_template('home.html', user=user, rows=res)
     else:
         rows=[]
@@ -77,7 +81,7 @@ def job_apply():
 
         with sqlite3.connect('ats.db') as conn:
             rows = conn.execute("select * from application where cand_id = ?",(user_id,)).fetchall()
-            rows2 = rows
+            #rows2 = rows
 
         return render_template('applications.html',user=session['name'],rows=rows,rows2=rows2)
 
@@ -240,9 +244,22 @@ def company_home():
     # company_name = session['company_name']
     company_name = session["name"]
     company_id = session["user_logged"]
+    sortby = request.args.get("sortby")
+    domain = request.args.get("domain")
+
     with sqlite3.connect('ats.db') as conn:
         res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ?',(company_id,)).fetchall()
         print(res)
+        
+        if sortby == 'exp':
+            res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ? order by experience desc',(company_id,)).fetchall()
+        elif sortby == 'domain':
+            res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ? order by domain desc',(company_id,)).fetchall()
+        elif sortby == 'title':
+            res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ? order by title desc',(company_id,)).fetchall()
+        elif domain:
+            res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ? and domain = ?',(company_id,domain,)).fetchall()
+
         for i in range(len(res)):
             applicants = conn.execute('select count(*) from application where job_id = ?',(res[i][0],)).fetchall()[0][0]
             print(applicants)
@@ -250,6 +267,7 @@ def company_home():
             list_res[4] = str(list_res[4]).split(" ")[0]
             list_res.append(applicants)
             res[i] = tuple(list_res)
+        
         return render_template('company_home.html', name=company_name, rows=res)
 
 

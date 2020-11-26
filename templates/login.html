@@ -28,7 +28,7 @@ body, html {
 <!-- Header with full-height image -->
 <header class="bgimg-1 w3-display-container w3-grayscale-min" id="home">
   <div class="w3-display-right w3-text-white" style="padding:48px">
-    <span class="w3-jumbo w3-hide-small">CANDIDATE</span><br>
+    <span class="w3-jumbo w3-hide-small">LOGIN NOW</span><br>
     <span class="w3-xxlarge w3-hide-large w3-hide-medium">Text text text</span><br>
     <span class="w3-large">Enter Login Details</span>
     <span class="w3-center">
@@ -39,10 +39,16 @@ body, html {
           <button class="w3-button w3-black" type="submit" value="Login">
             <i class="fa"></i> LOGIN
             <!--Validate credentials and activate click-->
-        </button>
-
+          </button>
+        </p>
+        <p>
+          <button class="w3-button w3-black" value="Login">
+            <i class="fa"></i><a href="{{ url_for('register') }}">SIGN UP</a>
+            <!--Validate credentials and activate click-->
+          </button>
         </p>
     </form>
+      
     {% if error %}
         <p class="error"><strong>Error:</strong> {{ error }}
     {% endif %}
