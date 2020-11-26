@@ -564,6 +564,42 @@ def rank_resume(filter_list,key1,key2,key3):
         rank.append(cand)
     return rank
 
+def rank_resume_db(filter_list,key1,key2,key3):
+    rank_list = []
+    score_list = []
+    accuracy_list = []
+    total_score = 0
+    for cand in filter_list:
+        score = 0
+        accuracy = 0
+        resume = (str(cand[13])).lower()
+        for key in key1:
+            if key:
+                score = score + (1.2 * resume.count(str(key.lower())))/len(key1)
+                print(key,resume.count(str(key.lower())))
+                print("\n")
+        for key in key2:
+            if key:
+                score = score + (1.1 * resume.count(str(key.lower())))/len(key2)
+                print(key,resume.count(str(key.lower())))
+                print("\n")
+        for key in key3:
+            if key:
+                score = score +  resume.count(str(key.lower()))/len(key3)
+                print(key,resume.count(str(key.lower())))
+                print("\n")
+        print(cand[0])
+        print(score)
+        total_score = total_score + score
+        print("\n")
+        rank_list.append((cand,score))
+
+    rank_list.sort(key=sortSecond,reverse=True)
+    rank = []
+    for cand,score in rank_list:
+        rank.append(cand)
+    return rank
+
 def _create_frequency_table(text_string) -> dict:
 
     stopWords = set(stopwords.words("english"))

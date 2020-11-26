@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 import random, json
 import os,glob
 from datetime import date,datetime
-from utils import get_resume_details_from_file, get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any,rank_resume,get_summary
+from utils import get_resume_details_from_file, get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any,rank_resume,get_summary, rank_resume_db
 from flask_migrate import Migrate
 from flask_heroku import Heroku
 import shutil
@@ -15,9 +15,11 @@ app.secret_key = 'secret'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 app.config['UPLOAD_FOLDER']='all_resumes/'
 app.config['SECRET_KEY']='nokey'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ats.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
 db = SQLAlchemy(app)
 
+# from models import Candidate
+# db.app = app
 
 @app.route("/")
 def test():
@@ -38,7 +40,6 @@ def home():
         post = request.args.get('post')
         company = request.args.get('company')
         doamin = request.args.get('domain')
-
 
         with sqlite3.connect('ats.db') as conn:
             res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id)',(user_id,)).fetchall()
@@ -80,10 +81,31 @@ def job_apply():
                 conn.execute("insert into application values(?,?,?,?,?)",(id, job, user_id,formatted_date,"In Process"))
 
         with sqlite3.connect('ats.db') as conn:
-            rows = conn.execute("select * from application where cand_id = ?",(user_id,)).fetchall()
-            #rows2 = rows
-
-        return render_template('applications.html',user=session['name'],rows=rows,rows2=rows2)
+            rows = []
+            rows2 = []
+            i=0
+            j=0
+            with sqlite3.connect('ats.db') as conn:
+                res = conn.execute("select * from application where cand_id = ?",(user_id,)).fetchall()
+                for k in range(len(res)):
+                    comp = conn.execute("select company,title from job_description where id = ?",(res[i][1],)).fetchall()[0]
+                    if res[k][4]=="In Process":
+                        data=[]
+                        data.append(res[k][1])
+                        data.append(comp[0])
+                        data.append(comp[1])
+                        data.append(str(res[k][3]).split(" ")[0])
+                        data.append(res[k][4])
+                        rows.append(data)
+                    else:
+                        data=[]
+                        data.append(res[k][1])
+                        data.append(comp[0])
+                        data.append(comp[1])
+                        data.append(str(res[k][3]).split(" ")[0])
+                        data.append(res[k][4])
+                        rows2.append(data)
+                return render_template('applications.html',user=session['name'],rows=rows,rows2=rows2)
 
 @app.route("/applications")
 def applications():
@@ -129,6 +151,7 @@ def login_form():
             password = request.form.get("pwd")
             print(username,password)
             res = conn.execute('select password from user where username = ?',(username,)).fetchall()
+
             print(res)
             if res==[] or res[0][0]!=password:
                 print('error')
@@ -274,17 +297,76 @@ def company_home():
 
 @app.route("/applicant/<job>", methods=['GET','POST'])
 def applicant(job):
-    with sqlite3.connect('ats.db') as conn:
-        res = conn.execute('select * from application where job_id = ?',(job,)).fetchall()
-        print(res)
-        row=[]
-        for i in range(len(res)):
-            applicant_id = conn.execute('select id from user where id = ?',(res[i][2],)).fetchall()[0][0]
-            candidate = conn.execute('select * from candidate where id = ?',(applicant_id)).fetchall()[0]
-            row.append(candidate)
+    if request.method =='GET':
+        print("jobid: ")
+        print(job)
+        with sqlite3.connect('ats.db') as conn:
+            res = conn.execute('select * from application where job_id = ?',(job,)).fetchall()
+            print(res)
+            row=[]
+            app_id = []
+            skill = conn.execute('select skill from job_description where id = ?',(job, )).fetchall()[0][0]
+            all_key_list =  skill.split(",")
+            for i in range(len(res)):
+                applicant = conn.execute('select id,resume_path from user where id = ?',(res[i][2],)).fetchall()[0]
+                print(applicant)
+                app_id.append(res[i][0])
+                candidate = conn.execute('select * from candidate where filename = ?',(applicant[1], )).fetchall()[0]
+                row.append(candidate)
         
-        result_list = rank_resume(row,[],all_key_list,any_key_list)
-        return render_template('result.html',result=result_list,skills="[ ]",exp = ",",key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link,all="",any="")    
+            result_list = rank_resume_db(row,[],all_key_list,[])
+            print("result: ")
+            # print(result_list)
+            filter_link=[]
+            # print(result_list)
+            print("URLS: ")
+            for cand in result_list:
+                url_link = cand[12]
+                print(url_link)
+                url_link = url_link.replace("assets","all_resume")
+                filter_link.append(url_link.split("/")[-1])
+            print("app_id")
+            print(app_id)
+            return render_template('result2.html',result=result_list,skills="[ ]",exp = ",",key = "" ,items=len(result_list),count=str(len(result_list)),url=filter_link,all="",any="", app_id=app_id)    
+
+@app.route("/view_candidate/<link>", methods=['GET','POST'])
+def view_candidate(link):
+    from models import Candidate
+    all_res = "all_resumes"
+    path_res = os.path.abspath(all_res)
+    if str(link).find("all_resumes")==-1:
+        link = "./all_resumes/" + link
+    print(link)
+    with sqlite3.connect('ats.db') as conn:
+        cand = conn.execute('select * from candidate where filename = ?',(link,)).fetchall()[0]
+
+    print(link)
+    if cand[7]:
+        skill = str(cand[7]).replace('\n','<br>')
+    else:
+        skill='NA'
+    if cand[8]:
+        exp = str(cand[8]).replace('\n','<br>')
+    else:
+        exp='NA'
+    
+    dur = str(cand[5]).replace('\n','<br>')
+
+    return render_template('candidate2.html',cand=cand,download=link,name=remove_number(link),skill=skill,exp=exp,dur=dur)
+
+@app.route("/status",methods=['GET','POST'])
+def status():
+    status=request.form.getlist('status_apply')
+    print("inside status")
+    print(status)
+    for s in status:
+        print("id: " + str(s))
+        with sqlite3.connect('ats.db') as conn:
+            res = conn.execute('update application set status="Selected" where id=?',(s,))
+    return redirect(url_for('company_home'))
+
+
+
 
 @app.route("/add_job",methods=['GET','POST'])
 def add_job():
@@ -379,6 +461,10 @@ def schedule():
     return render_template("inter.html",rows2=rows2)
 
 
+
+
+
+
 @app.route("/search",methods=['GET','POST'])
 def search():
     error= ""
@@ -409,6 +495,7 @@ def search():
                 complete=dict_res['complete']
 
                 from models import Candidate
+
                 duplicate=0
                 for i in range(total):
                     k=0
@@ -432,7 +519,6 @@ def search():
                         db.session.commit()
 
                     else:
-
                         for cand in Candidate.query.all():
                             if new_cand.phone=='NA' and new_cand.email!='NA':
                                 #print("inside na notna",filenames[i])
@@ -743,8 +829,11 @@ def view(link):
     from models import Candidate
     all_res = "all_resumes"
     path_res = os.path.abspath(all_res)
+    print("link")
+    print(link)
     cand = Candidate.query.filter_by(resume=path_res + "/" + link).first()
     print(link)
+    
     if cand.skills:
         skill = str(cand.skills).replace('\n','<br>')
     else:
@@ -755,7 +844,7 @@ def view(link):
         exp='NA'
     
     dur = str(cand.duration).replace('\n','<br>')
-
+    print("download: " + link)
     return render_template('candidate.html',cand=cand,download=link,name=remove_number(link),skill=skill,exp=exp,dur=dur)
 
 
@@ -763,6 +852,7 @@ def view(link):
 @app.route('/uploads/<path:filename>', methods=['GET', 'POST'])
 def download(filename):
     uploads = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'])
+    filename = filename.split("/")[-1]
     return send_from_directory(directory=uploads, filename=filename,as_attachment=True,attachment_filename=remove_number(filename))
 
 @app.route("/upload_resumes",methods=['POST'])
