@@ -50,13 +50,11 @@ body, html {
               <!-- <p><i class="fa fa-map-marker fa-fw w3-xxlarge w3-margin-right"></i> Chicago, US</p>
               <p><i class="fa fa-phone fa-fw w3-xxlarge w3-margin-right"></i> Phone: +00 151515</p>
               <p><i class="fa fa-envelope fa-fw w3-xxlarge w3-margin-right"> </i> Email: mail@mail.com</p> -->
-              <form action="{{ url_for('sort_job') }}" method="post">
+              <form action="{{ url_for('company_home') }}" method="GET">
                 <h3>SORT BY</h3>
-                <p><input class="w3-border" type="radio" placeholder="Preference 1"  name="pref" value="Age">Age</p>
-                <p><input class="w3-border" type="radio" placeholder="Preference 2"  name="pref" value="Gen">Sex</p>
-                <p><input class="w3-border" type="radio" placeholder="Preference 3"  name="pref" value="Domain">Domain</p>
-                <p><input class="w3-border" type="radio" placeholder="Preference 4"  name="pref" value="Preferences">Preferences</p>
-                <p><input class="w3-border" type="radio" placeholder="Experience in years"  name="pref" value="Experience">Experience</p>
+                <p><input class="w3-border" type="radio" placeholder="Preference 3"  name="sortby" value="domain">Domain</p>
+                <p><input class="w3-border" type="radio" placeholder="Preference 4"  name="sortby" value="title">job title</p>
+                <p><input class="w3-border" type="radio" placeholder="Experience in years"  name="sortby" value="exp">Experience</p>
                 <!-- <p><input class="w3-border" type="radio" placeholder="Preference 6"  name="pref" value>Education</p> -->
                 <p>
                   <button class="w3-button w3-black" type="submit">
@@ -66,24 +64,14 @@ body, html {
               </form>
             </div>
             <div class="w3-half">
-              <form action="{{ url_for('filter_job') }}" method="post">
+              <form action="{{ url_for('company_home') }}" method="get">
                 <h3>FILTER BY</h3>
                 <p>Domain<br><select name="domain" placeholder="Domain">
-                    <option value="Machine Learning" name="domain">Machine Learning</option>
+                    <option value="machine learning" name="domain">Machine Learning</option>
                     <option value="Robotics" name="domain">Robotics</option>
                     <option value="Image Processing" name="domain">Image Processing</option>
                     <option value="Web Design" name="domain">Web Design</option>
                     <option value="Bigdata" name="domain">Bigdata</option>
-                    </select>
-                </p>
-                <p>Experience<br><select name="experience" placeholder="Experience">
-                      <option value="0" name="experience">0 years</option>
-                      <option value="1" name="experience">1+ years</option>
-                      <option value="3" name="experience">3+ years</option>
-                      <option value="5" name="experience">5+ years</option>
-                      <option value="7" name="experience">7+ years</option>
-                      <option value="8" name="experience">8+ years</option>
-                      <option value="10" name="experience">10+ years</option>
                     </select>
                 </p>
                 <p>
@@ -159,6 +147,8 @@ function onClick(element) {
   var captionText = document.getElementById("caption");
   captionText.innerHTML = element.alt;
 }
+
+</script>
 
 </body>
 </html>
