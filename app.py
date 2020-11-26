@@ -27,7 +27,7 @@ def test():
 
 @app.route("/logout")
 def logout():
-    return render_template('login.html')
+    return redirect(url_for('login'))
 @app.route("/home")
 def home():
     user = session['name']
@@ -42,19 +42,20 @@ def home():
         doamin = request.args.get('domain')
 
         with sqlite3.connect('ats.db') as conn:
-            res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id)',(user_id,)).fetchall()
+            res = conn.execute('select  jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id)',(user_id,)).fetchall()
             print(res)
+            
             if res==[]:
                 return render_template('home.html', user=user)
             else:
                 if sortby == 'salary':
-                    res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by salary desc',(user_id,)).fetchall()
+                    res = conn.execute('select jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by salary desc',(user_id,)).fetchall()
                 elif sortby == 'hours':
-                    res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by working_hours desc',(user_id,)).fetchall()
+                    res = conn.execute('select jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by working_hours desc',(user_id,)).fetchall()
                 elif sortby == 'exp':
-                    res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by experience desc',(user_id,)).fetchall()
+                    res = conn.execute('select jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by experience desc',(user_id,)).fetchall()
                 elif doamin:
-                    res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) and domain=? and title=?',(user_id,doamin,post)).fetchall()
+                    res = conn.execute('select jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) and domain=? and title=?',(user_id,doamin,post)).fetchall()
                 return render_template('home.html', user=user, rows=res)
     else:
         rows=[]
@@ -119,7 +120,7 @@ def applications():
     with sqlite3.connect('ats.db') as conn:
         res = conn.execute("select * from application where cand_id = ?",(user_id,)).fetchall()
         for k in range(len(res)):
-            comp = conn.execute("select company,title from job_description where id = ?",(res[i][1],)).fetchall()[0]
+            comp = conn.execute("select (select u.name from user as u where u.id = jd.company),title from job_description as jd where id = ?",(res[i][1],)).fetchall()[0]
             if res[k][4]=="In Process":
                 data=[]
                 data.append(res[k][1])
