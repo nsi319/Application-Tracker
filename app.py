@@ -18,6 +18,8 @@ app.config['SECRET_KEY']='nokey'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///Candidate.db'
 db = SQLAlchemy(app)
 
+# from models import Candidate
+# db.app = app
 
 @app.route("/")
 def test():
@@ -25,7 +27,7 @@ def test():
 
 @app.route("/logout")
 def logout():
-    return render_template('login.html')
+    return redirect(url_for('login'))
 @app.route("/home")
 def home():
     user = session['name']
@@ -38,18 +40,22 @@ def home():
         post = request.args.get('post')
         company = request.args.get('company')
         doamin = request.args.get('domain')
-        if(sortby == 'salary'):
-            rows = [[2,3,4,5,6,1]]
-        
-        elif sortby == '':
-            pass
 
         with sqlite3.connect('ats.db') as conn:
-            res = conn.execute('select jd.id,company,title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id)',(user_id,)).fetchall()
+            res = conn.execute('select  jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id)',(user_id,)).fetchall()
             print(res)
+            
             if res==[]:
                 return render_template('home.html', user=user)
             else:
+                if sortby == 'salary':
+                    res = conn.execute('select jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by salary desc',(user_id,)).fetchall()
+                elif sortby == 'hours':
+                    res = conn.execute('select jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by working_hours desc',(user_id,)).fetchall()
+                elif sortby == 'exp':
+                    res = conn.execute('select jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) order by experience desc',(user_id,)).fetchall()
+                elif doamin:
+                    res = conn.execute('select jd.id,(select u.name from user as u where u.id = jd.company),title,desc,skill,experience,salary,working_hours from job_description as jd where ? not in (select cand_id from application as app where app.job_id=jd.id) and domain=? and title=?',(user_id,doamin,post)).fetchall()
                 return render_template('home.html', user=user, rows=res)
     else:
         rows=[]
@@ -114,7 +120,7 @@ def applications():
     with sqlite3.connect('ats.db') as conn:
         res = conn.execute("select * from application where cand_id = ?",(user_id,)).fetchall()
         for k in range(len(res)):
-            comp = conn.execute("select company,title from job_description where id = ?",(res[i][1],)).fetchall()[0]
+            comp = conn.execute("select (select u.name from user as u where u.id = jd.company),title from job_description as jd where id = ?",(res[i][1],)).fetchall()[0]
             if res[k][4]=="In Process":
                 data=[]
                 data.append(res[k][1])
@@ -146,6 +152,7 @@ def login_form():
             password = request.form.get("pwd")
             print(username,password)
             res = conn.execute('select password from user where username = ?',(username,)).fetchall()
+
             print(res)
             if res==[] or res[0][0]!=password:
                 print('error')
@@ -261,9 +268,22 @@ def company_home():
     # company_name = session['company_name']
     company_name = session["name"]
     company_id = session["user_logged"]
+    sortby = request.args.get("sortby")
+    domain = request.args.get("domain")
+
     with sqlite3.connect('ats.db') as conn:
         res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ?',(company_id,)).fetchall()
         print(res)
+        
+        if sortby == 'exp':
+            res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ? order by experience desc',(company_id,)).fetchall()
+        elif sortby == 'domain':
+            res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ? order by domain desc',(company_id,)).fetchall()
+        elif sortby == 'title':
+            res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ? order by title desc',(company_id,)).fetchall()
+        elif domain:
+            res = conn.execute('select id,domain,title,experience,post_date from job_description where company = ? and domain = ?',(company_id,domain,)).fetchall()
+
         for i in range(len(res)):
             applicants = conn.execute('select count(*) from application where job_id = ?',(res[i][0],)).fetchall()[0][0]
             print(applicants)
@@ -271,6 +291,7 @@ def company_home():
             list_res[4] = str(list_res[4]).split(" ")[0]
             list_res.append(applicants)
             res[i] = tuple(list_res)
+        
         return render_template('company_home.html', name=company_name, rows=res)
 
 
@@ -439,6 +460,10 @@ def schedule():
         cur.execute("select interviewed_by.cand_id as candidate_id,interviewed_by.jo_id as job_id, resume.name as name,interviewed_by.int_date as date, interviewed_by.int_time as time, interviewed_by.status as status from interviewed_by, resume, candidate, job_description, company where resume.resume_id=candidate.resume_id and candidate.candidate_id=interviewed_by.cand_id and job_description.comp_id=company.company_id and interviewed_by.jo_id=job_description.job_id and company.company_id=(?)",(cid,))
         rows2=cur.fetchall()
     return render_template("inter.html",rows2=rows2)
+
+
+
+
 
 
 @app.route("/search",methods=['GET','POST'])
