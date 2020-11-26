@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <br>
+  <br>
+  <br>
+	<title>
+		Application
+	</title>
+ 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+
+<style>
+  body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+  body, html {
+      height: 100%;
+      line-height: 1.8;
+  }
+  /* Full height image header */
+  .bgimg-1 {
+      background-position: center;
+      background-size: cover;
+      /*background-image: url("30.jpg");*/
+      background-color: black;
+      min-height: 100%;
+  }
+  .w3-bar .w3-button {
+      padding: 16px;
+  }
+  </style>
+  <body id="body">
+  
+  <!-- Navbar (sit on top) -->
+  <div class="w3-top">
+    <div class="w3-bar w3-white w3-card" id="myNavbar">
+      <a href="/company_home" class="w3-bar-item w3-button w3-wide">Applications</a>
+      <a href="#" class="w3-bar-item w3-button w3-wide">New Job</a>
+      <a href="/search" class="w3-bar-item w3-button w3-wide">Search</a>
+      <!-- Right-sided navbar links -->
+      <div class="w3-right">
+        <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button"><i class="fa"></i>LOGOUT</a>
+    </div>
+      <!-- Hide right-floated links on small screens and replace them with a menu icon -->
+    </div>
+  </div>
+
+  <div hidden>
+  <div class="w3-card-4">
+    <header class="w3-container w3-blue">
+      <b>Phone:</b>    
+    </header>
+    <header class="w3-container w3-light-grey">
+      <b>Email:</b>    
+    </header>
+    <div class="w3-container">
+      <p><b>Linkedin:</b></p>
+    </div>
+    <div class="w3-container">
+      <p><b>Experience:</b></p>
+    </div>
+    <a href="#" style="text-decoration: underline; color: blue;"><b>Open</b></a>
+  </div>
+
+  <div id ="resume_list_dup" style="margin-left: 10px;">
+    Skills:<b> [ ]</b>    
+    <br>
+    Experience between<b> [ , ] </b>years
+    <br>
+    Keywords: <b>[ | ]</b>
+    <br>
+    <p>Number of resumes:</p>
+    </div>
+  
+
+  </div>
+  <div class="row" style="display: flex;">
+    <div class="column" style="flex: 30%;" >
+      <h6 style="text-align: center;"><b>Search within results:</b></h6>
+      <br>
+      <form class = "form_search" id="resume_search" action="/result2" method="POST">
+        <div class="input_forsearch">
+          <div class="exp_input" style="margin: 10px; border: 5px; border-color: black;">
+            <h6>Keywords: </h6>
+            <div class="w3-container" style="margin: 10px;">
+            <label for="any_key">Any of the keywords:</label>
+            <input type="text" class="w3-input w3-border w3-border-blue w3-hover-border-green" name="rany_key" id="any_key" value="{{any}}"> 
+            </div>
+            <div class="w3-container" style="margin: 10px;">
+            <label for="all_key">All the keywords:</label>
+            <input type="text" name="rall_key" class="w3-input w3-border w3-border-blue w3-hover-border-green" id="all_key" value="{{all}}"> 
+          </div>
+          {% if result %}
+          {% if from_search %}
+          {% for r in result %}
+          <input type="hidden" name="found_resumes" value="{{r[14]}}">
+          {% endfor %}
+          {% endif %}
+          {% endif %}  
+          </div>   
+          </div>
+          <br>
+          <div class="button_center" style="text-align: center;">
+          <input type="hidden" name="post" value="search_results">
+          <button class="w3-button w3-black w3-round" type="submit" onclick="loader()" style="margin-top: 10px;">
+            Find Resumes
+            <span class="spinner-border spinner-border-sm" role="status" id="img" aria-hidden="true" style="visibility: collapse;"></span>
+            </button>
+          </div>
+      </form>
+      </div>
+
+    <div class="column" style="flex: 70%;" >
+      <p>Resumes matched with:</p> 
+      <div id ="resume_list" style="margin-left: 10px;">
+      {% if skills %}
+      Skills: <b>{{skills}}</b>
+      <br>
+      {% endif %}
+      {% if exp %}
+      Experience between <b>[ {{exp}} ] </b>years
+      <br>
+      {% endif %}
+      {% if key %}
+      Keywords: <b>[ {{key}} ]</b>
+      <br>
+      {% endif %}
+      {% if count %}
+      <p>Number of resumes: <b>{{count}}</b></p>
+      <br>
+      {% endif %}
+      {% if empty %}
+      <p style="float: left;"><b>{{empty}}</b></p>
+      <br>
+      {% endif %}
+      {% if empty_reload %}
+      <div id ="resume_list_dup" style="margin-left: 10px;">
+        Skills: <b>[ ]</b>    
+        <br>
+        Experience between<b> [ , ] </b>years
+        <br>
+        Keywords: <b>[ | ]</b>
+        <br>
+        <p>Number of applications:</p>
+        </div>    
+      <p style="float: left;"><b>{{empty_reload}}</b></p>
+      <br>
+      {% endif %}
+      </div> 
+      <form method="POST" id="status_form" action= "{{url_for('status')}}" >
+      {% set count = namespace(v=0) %}
+      {% if items %}
+      {% if result %}
+      {% for r in result %}
+      <!-- <input type="hidden" name="app" value={{app_id[count.v]}} /> -->
+      <div class="w3-row" style="align-content:flex-start;">
+      <div class="w3-card-4 w3-threequater" style="width: 90%; margin-right: 20px; margin-left: 10px; cursor: pointer;" onmouseover="make_blue(this)" onmouseout="remove_border(this)">
+        <div class="loader_ajax_small" style="display: none;"></div>
+
+        <header class="w3-container w3-blue w3-row-padding">
+            <input type="checkbox" name="status_apply" id="status_apply" style="align-self: flex-start; margin-right: 0px;" value={{app_id[count.v]}}"> 
+            <!-- <p>{{app_id[count.v]}}</p> -->
+         <p> <b>Phone:</b> {{r[1]}} </p>   
+        </header>
+        <header class="w3-container w3-light-grey">
+          <p><b>Email:</b> {{r[2]}}</p>    
+        </header>
+        <div class="w3-container">
+          <p><b>Linkedin:</b> {{r[3]}}</p>
+        </div>
+        <div class="w3-container">
+          <p><b>Experience:</b> {{r[4]}}</p>
+        </div>
+        <div class="w3-container" >
+          <a href="{{url_for('view_candidate',link=url[count.v])}}" style="color: blue; align-self: center;" onmouseover="make_blue(this)" onmouseout="remove_border(this)"><b>Open</b></a>
+      </div>
+        {% set count.v = count.v + 1 %}
+      </div>
+    </div>
+      <br>
+      {% endfor %}
+      {% endif %}
+      {% endif %}
+      <div class="w3-row">
+        <button class="w3-button w3-green w3-round" form="status_form" type="submit" name="view" style="width: min-content;">
+          <a href="{{url_for('status')}}">Select Candidates</a>
+        </button>
+      </div>
+      <input type="hidden" id="total_number" value="count.v">
+    </form>
+      <!--
+          <ul class="pagination">
+          <li class="page-item"><a class="page-link" href="" onclick="change_page(this)">Previous</a></li>
+          <li class="page-item"><a class="page-link" href="" onclick="change_page(this)">Next</a></li>
+        </ul>
+      -->
+      
+    </div>
+  </div>
+</body>
+
+<script>
+  if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+  function make_blue(card) {
+    card.style.border = "1px solid blue"
+  }
+  function remove_border(card) {
+    card.style.border = null
+  }
+  function loader() {
+  //document.getElementById("resume_list").innerHTML=null
+	document.getElementById("img").style.visibility="visible"
+  document.getElementById("body").style.pointerEvents="none"
+  console.log("number")
+  document.getElementById("resume_list").innerHTML = document.getElementById("resume_list_dup").innerHTML
+  console.log("done")
+  console.log("loader")
+  for(i=0;i<document.getElementsByClassName("loader_ajax_small").length;i=i+1) {
+    document.getElementsByClassName("loader_ajax_small")[i].style.display="block";
+    console.log(i);
+  }
+  console.log("card")
+  for(i=0;i<document.getElementsByClassName("card-body").length;i=i+1) {
+    card = document.getElementsByClassName("card-body")[i]
+    card.innerHTML=document.getElementsByClassName("card-body-dup")[0].innerHTML
+    console.log(i)
+  }
+}
+function change_page(pg) {
+  total = Integer(document.getElementById("total_number"))
+  console.log(total)
+  pagination = document.getElementsByClassName("pagination")[0]
+
+}
+// slight update to account for browsers not supporting e.which
+function disableF5(e) { if ((e.which || e.keyCode) == 116) e.preventDefault(); };
+// To disable f5
+    /* jQuery < 1.7 */
+$(document).bind("keydown", disableF5);
+/* OR jQuery >= 1.7 */
+$(document).on("keydown", disableF5); 
+
+// To re-enable f5
+    /* jQuery < 1.7 */
+$(document).unbind("keydown", disableF5);
+/* OR jQuery >= 1.7 */
+$(document).off("keydown", disableF5);
+
+
+
+
+</script>
+</html>
