@@ -55,7 +55,7 @@ def search():
             # remove files in assets and move to assets_all
 
             if data==-1:
-                return render_template('register.html',total="Error parsing resume data..")
+                return render_template('search.html',total="Error parsing resume data..")
             else:
                 dict_res=data 
                 total = int(dict_res['total'])
