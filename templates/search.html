@@ -138,7 +138,14 @@
 
 
 <script>
+window.onload=function(){localStorage.setItem("home_page", location.href)}
 
+function go_back(){
+ window.location.href = localStorage.getItem("home_page")
+ console.log(window.location.href)
+
+ };
+console.log(location.href)
 var count=1, limit=2;
 
 

@@ -3,8 +3,8 @@ from flask_sqlalchemy import SQLAlchemy
 import random, json
 import os,glob
 from datetime import date,datetime
-from utils import get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any,rank_resume
-from summary import get_summary
+from utils.resume_parser import get_resume_details,change_permissions_recursive,remove_number,get_numbers,check_all,check_any,rank_resume
+from utils.summary import get_summary
 from flask_migrate import Migrate
 from flask_heroku import Heroku
 import shutil
@@ -50,87 +50,94 @@ def search():
 
             total=0
             dict_res = {'dict1':None,'dict2':None,'total':None,'filename':None}
-            dict_res = get_resume_details(os.path.abspath(dire))
-            total = int(dict_res['total'])
-            filenames = dict_res['filename']
-            complete=dict_res['complete']
+            data = get_resume_details(os.path.abspath(dire))
+            print(data)
+            # remove files in assets and move to assets_all
 
-            from models import Candidate
-            duplicate=0
-            for i in range(total):
-                k=0
-                first=[]
-                second=[]
-                for text in ['email','linkedin','phone','exp_years','duration']:
-                    first.append(dict_res['dict1'][text][i])
-                for text in ['summary','skills','experience','education','extra','awards']:
-                    second.append("\n".join(dict_res['dict2'][text][i].splitlines()))
-                timestamp = datetime.now().timestamp()
-                all_res = "all_resumes"
-                path_res = os.path.abspath(all_res)
-                uniq = path_res + "/" + str(timestamp) +  filenames[i].split("/")[-1].split(".")[0] + "." + filenames[i].split(".")[-1]
-                #print("filename and unique",(filenames[i],uniq))
-                new_cand = Candidate(email=str(first[0]),linkedin=first[1],phone=first[2][0],exp_years=first[3],duration="\n".join(first[4]),summary=second[0],skills=second[1],experience=second[2],education=second[3],extra=second[4],awards=second[5],resume=uniq,filename=filenames[i],complete_resume=complete[i])
-                if new_cand.email=='NA' and new_cand.phone=='NA':
-                    #print("inside both na",filenames[i])
-                    #print(new_cand.email + " " + new_cand.phone)
-                    shutil.copy(filenames[i],uniq)
-                    db.session.add(new_cand)
-                    db.session.commit()
+            if data==-1:
+                return render_template('register.html',total="Error parsing resume data..")
+            else:
+                dict_res=data 
+                total = int(dict_res['total'])
+                filenames = dict_res['filename']
+                complete=dict_res['complete']
 
-                else:
-
-                    for cand in Candidate.query.all():
-                        if new_cand.phone=='NA' and new_cand.email!='NA':
-                            #print("inside na notna",filenames[i])
-                            #print(new_cand.email + " " + new_cand.phone)
-
-                            if new_cand.email == cand.email:
-                                duplicate=duplicate+1
-                                k=1
-                                break
-                        elif new_cand.phone!='NA' and new_cand.email=='NA':
-                            #print("inside not na na",filenames[i])
-                            #print(new_cand.email + " " + new_cand.phone)
-                            if new_cand.phone == cand.phone:
-                                duplicate=duplicate+1
-                                k=1
-                                break
-                        else:
-                            #print("inside both not na",filenames[i])
-                            #print(new_cand.email + " " + new_cand.phone)
-                            if new_cand.phone==cand.phone or new_cand.email==cand.email:
-                                duplicate=duplicate+1
-                                k=1
-                                break
-                    if k==0:
+                from models import Candidate
+                duplicate=0
+                for i in range(total):
+                    k=0
+                    first=[]
+                    second=[]
+                    for text in ['email','linkedin','phone','exp_years','duration']:
+                        first.append(dict_res['dict1'][text][i])
+                    for text in ['summary','skills','experience','education','extra','awards']:
+                        second.append("\n".join(dict_res['dict2'][text][i].splitlines()))
+                    timestamp = datetime.now().timestamp()
+                    all_res = "all_resumes"
+                    path_res = os.path.abspath(all_res)
+                    uniq = path_res + "/" + str(timestamp) +  filenames[i].split("/")[-1].split(".")[0] + "." + filenames[i].split(".")[-1]
+                    #print("filename and unique",(filenames[i],uniq))
+                    new_cand = Candidate(email=str(first[0]),linkedin=first[1],phone=first[2][0],exp_years=first[3],duration="\n".join(first[4]),summary=second[0],skills=second[1],experience=second[2],education=second[3],extra=second[4],awards=second[5],resume=uniq,filename=filenames[i],complete_resume=complete[i])
+                    if new_cand.email=='NA' and new_cand.phone=='NA':
+                        #print("inside both na",filenames[i])
+                        #print(new_cand.email + " " + new_cand.phone)
                         shutil.copy(filenames[i],uniq)
                         db.session.add(new_cand)
                         db.session.commit()
-                    k=0
-            
-            #remove files in assets and move to assets_all
-            files = glob.glob(os.path.join(r'assets'))
-            #change_permissions_recursive(os.path.abspath(r'assets'),0o777)
-            '''
-            for file in files:
-                shutil.move(file,os.path.abspath('assets_all'))
-            print("files moved and removed")
-            '''
-            dire = 'assets'
 
-            if os.path.exists(os.path.abspath(dire)):
-                shutil.rmtree(dire)
-            os.makedirs(os.path.abspath(dire))
+                    else:
 
-            #print("files moved and removed")
-            if total==0:
-                return render_template('search.html',total="No resumes of the format pdf,doc,docx were found") 
-            else:
-                if duplicate==0:
-                    return render_template('search.html',total="Found and uploaded " + str(total) + " resumes")
+                        for cand in Candidate.query.all():
+                            if new_cand.phone=='NA' and new_cand.email!='NA':
+                                #print("inside na notna",filenames[i])
+                                #print(new_cand.email + " " + new_cand.phone)
+
+                                if new_cand.email == cand.email:
+                                    duplicate=duplicate+1
+                                    k=1
+                                    break
+                            elif new_cand.phone!='NA' and new_cand.email=='NA':
+                                #print("inside not na na",filenames[i])
+                                #print(new_cand.email + " " + new_cand.phone)
+                                if new_cand.phone == cand.phone:
+                                    duplicate=duplicate+1
+                                    k=1
+                                    break
+                            else:
+                                #print("inside both not na",filenames[i])
+                                #print(new_cand.email + " " + new_cand.phone)
+                                if new_cand.phone==cand.phone or new_cand.email==cand.email:
+                                    duplicate=duplicate+1
+                                    k=1
+                                    break
+                        if k==0:
+                            shutil.copy(filenames[i],uniq)
+                            db.session.add(new_cand)
+                            db.session.commit()
+                        k=0
+                
+                #remove files in assets and move to assets_all
+                files = glob.glob(os.path.join(r'assets'))
+                #change_permissions_recursive(os.path.abspath(r'assets'),0o777)
+                '''
+                for file in files:
+                    shutil.move(file,os.path.abspath('assets_all'))
+                print("files moved and removed")
+                '''
+                dire = 'assets'
+
+                if os.path.exists(os.path.abspath(dire)):
+                    shutil.rmtree(dire)
+                os.makedirs(os.path.abspath(dire))
+
+                #print("files moved and removed")
+                if total==0:
+                    return render_template('search.html',total="No resumes of the format pdf,doc,docx were found") 
                 else:
-                    return render_template('search.html',total= "Found " + str(total) + " resumes.. Found " + str(duplicate) + "/" + str(total) + " duplicate resumes")
+                    if duplicate==0:
+                        return render_template('search.html',total="Found and uploaded " + str(total) + " resumes")
+                    else:
+                        return render_template('search.html',total= "Found " + str(total) + " resumes.. Found " + str(duplicate) + "/" + str(total) + " duplicate resumes")
         else:
             return render_template('search.html')
     else:
@@ -145,9 +152,39 @@ def result():
             #search on results
             any_key = request.form['rany_key']
             all_key = request.form['rall_key']
-            resumes = request.form.getlist('found_resumes')
-            any_key_list = any_key.split(",")
-            all_key_list = all_key.split(",")
+            print("keys from search: ",any_key,all_key)
+            print("resumes found before and after: ")
+            print(session["resumes"])
+            if session['resumes']==[]:
+                resumes = request.form.getlist('found_resumes')
+                session['resumes']=resumes                
+                session['prev_resumes']=resumes
+
+            else:
+                resumes = session['resumes']
+                session['prev_resumes']=resumes
+
+            
+
+            print(session["resumes"])
+
+            any_key_list = list(set(any_key.split(",")))
+            all_key_list = list(set(all_key.split(",")))
+
+            if session['any']==[]:
+                session['any']=any_key_list
+                session['prev_any']=[]
+            else:
+                session['prev_any']=session['any']
+                session['any']=any_key_list
+            if session['all']==[]:
+                session['all']=all_key_list
+                session['prev_all']=[]
+            else:
+                session['prev_all']=session['all']
+                session['all']=all_key_list
+
+
             found_candidates=[]
             filter_list =[]
             filter_link =[]
@@ -164,26 +201,44 @@ def result():
                 if check_any(cand,any_key_list)==1 and check_all(cand,all_key_list)==1:
                     filter_list.append(cand)
                     total=total+1
-                    
-            keywords_matched.append("| ".join(any_key_list))
-            if all_key_list:
-                keywords_matched.append("| ")
-            keywords_matched.append("| ".join(all_key_list))
+            
+            keywords_matched.extend(all_key_list)
+            keywords_matched.extend(any_key_list)
+            keywords_matched = [x.strip() for x in keywords_matched if x.strip()]
+            keywords_matched = list(set(keywords_matched))
+            print("final keywords matched", keywords_matched)
+            keywords_matched = " | ".join(keywords_matched)
+            session["total"] = total
+            session["total_final"] = total_final
+            to_session = []
+            for res in filter_list:
+                to_session.append(res.resume)
+                
+            # session["resumes"] = to_session
+
+            print("resumes after search-result operation")
+            print(to_session)
 
             if len(filter_list)==0:
                 empty="NO MATCHES FOUND"
                 filter_link=[]
-                return render_template('result.html',result=filter_list,skills="[ ]",exp = ",",key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),empty=empty,url=filter_link)
+                return render_template('result.html',result=filter_list,skills=session['skill'],exp = session['exp'],key = keywords_matched ,items=len(filter_list),count=str(total) + "/" + str(total_final),empty=empty,url=filter_link,all=all_key,any=any_key)
             else:
-
                 filter_link=[]
                 for cand in filter_list:
                     url_link = cand.resume
                     filter_link.append(url_link.split("/")[-1])
                 result_list = rank_resume(filter_list,[],all_key_list,any_key_list)
-                return render_template('result.html',result=result_list,skills="[ ]",exp = ",",key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link)
+                return render_template('result.html',result=result_list,skills=session['skill'],exp = session['exp'],key = keywords_matched,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link,all=all_key,any=any_key)
 
         else:
+
+            session['resumes']=[]
+            session['total'] = 0
+            session['total_final']=0
+            session['all']=[]
+            session['any']=[]
+            session['prev_resumes']=[]
 
             skill = request.form.getlist('skill')
             skill_exp = request.form.getlist('skill_exp')
@@ -193,6 +248,7 @@ def result():
             all_key = request.form['all_key']
             min_expyear = request.form['min_expyear']
             max_expyear = request.form['max_expyear']
+
 
             
             #search for skill and exp
@@ -214,6 +270,27 @@ def result():
 
             any_key_list = any_key.split(",")
             all_key_list = all_key.split(",")
+
+            session['any']=session['all']=[]
+            session['skill'] = " , ".join(skill)
+
+            if session['any']==[]:
+                session['any']=any_key_list
+                session['prev_any']=[]
+            else:
+                session['prev_any']=session['any']
+                session['any']=any_key_list
+            if session['all']==[]:
+                session['all']=all_key_list
+                session['prev_all']=[]
+            else:
+                session['prev_all']=session['all']
+                session['all']=all_key_list
+
+            all=",".join(all_key_list)
+            any=",".join(any_key_list)
+            
+            
 
             from models import Candidate
             for cand in Candidate.query.all():
@@ -320,12 +397,14 @@ def result():
 
             exp_matched = str(mini) + " , " + str(maxi)
             list_set_keys = list(set_keys)
-
-            keywords_matched.append("| ".join(any_key_list))
-            if all_key_list:
-                keywords_matched.append("| ")
-            keywords_matched.append("| ".join(all_key_list)) 
-
+            keywords_list=[]
+            if any_key_list!=['']:
+                keywords_list=any_key_list
+            if all_key_list!=['']:
+                [keywords_list.append(val) for val in all_key_list]
+            print(keywords_list)
+            keywords_list = list(set(keywords_list))
+            keywords_matched.append(" | ".join(list(set(keywords_list))))
             p=0
             for sk in skill:
                 if sk=='':
@@ -334,20 +413,84 @@ def result():
                 val = " [ ] "
             else:
                 val=""
+            
+            to_session = []
+            for res in filter_list:
+                to_session.append(res.resume)
+                
+            session["resumes"] = to_session
+
+            print("resume session-from-search")
+            print(session["resumes"])
+            session["total"] = total
+            session["total_final"] = total_final
+
+            session["exp"] = " " + exp_matched + " "
+
             if len(filter_list)==0:
                 empty="NO MATCHES FOUND"
                 filter_link=[]
-                return render_template('result.html',result=filter_list,skills= val + " ".join(list_set_keys),exp = " " + exp_matched + " " ,key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),empty=empty,url=filter_link)
+                return render_template('result.html',result=filter_list,skills= " , ".join(skill),exp = " " + exp_matched + " " ,key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),empty=empty,url=filter_link,all=all,any=any,from_search=1)
             else:
                 filter_link=[]
                 for cand in filter_list:
                     url_link = cand.resume
                     filter_link.append(url_link.split("/")[-1])
                 result_list = rank_resume(filter_list,skill,all_key_list,any_key_list)
-                return render_template('result.html',result=result_list,skills= val + " ".join(list_set_keys),exp = " " + exp_matched + " " ,key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link)
+                return render_template('result.html',result=result_list,skills= " , ".join(skill),exp = " " + exp_matched + " " ,key = " ".join(keywords_matched) ,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link,all=all,any=any,from_search=1)
     else:
-        empty="NO MATCHES FOUND"
-        return render_template('result.html',empty_reload=empty)
+
+        from models import Candidate
+        print("resume session-reload-refresh")
+        found_candidates=[]
+        filter_list =[]
+        filter_link =[]
+        total = 0
+        total_final=0
+        keywords_matched=[]
+        any_key_list = session['prev_any']
+        all_key_list = session['prev_all']
+        resumes = session["prev_resumes"]
+        print(resumes)
+        print("keys: ",any_key_list,all_key_list)
+        for res in resumes:
+            cand = Candidate.query.filter_by(resume=res).first()
+            found_candidates.append(cand)
+
+        for cand in found_candidates:
+            total_final = total_final + 1
+            if check_any(cand,any_key_list)==1 and check_all(cand,all_key_list)==1:
+                filter_list.append(cand)
+                total=total+1
+        
+        keywords_matched.extend(all_key_list)
+        keywords_matched.extend(any_key_list)
+        keywords_matched = [x.strip() for x in keywords_matched if x.strip()]
+        keywords_matched = list(set(keywords_matched))
+        print("final keywords matched", keywords_matched)
+        keywords_matched = " | ".join(keywords_matched)
+        session["total"] = total
+        session["total_final"] = total_final
+        to_session = []
+        for res in filter_list:
+            to_session.append(res.resume)
+            
+        # session["resumes"] = to_session
+
+        print("resumes after search-result operation")
+        print(to_session)
+
+        if len(filter_list)==0:
+            empty="NO MATCHES FOUND"
+            filter_link=[]
+            return render_template('result.html',result=filter_list,skills="[ ]",exp = ",",key = keywords_matched ,items=len(filter_list),count=str(total) + "/" + str(total_final),empty=empty,url=filter_link,all=",".join(all_key_list),any=",".join(any_key_list))
+        else:
+            filter_link=[]
+            for cand in filter_list:
+                url_link = cand.resume
+                filter_link.append(url_link.split("/")[-1])
+            result_list = rank_resume(filter_list,[],all_key_list,any_key_list)
+            return render_template('result.html',result=result_list,skills="[ ]",exp = ",",key = keywords_matched,items=len(filter_list),count=str(total) + "/" + str(total_final),url=filter_link,all=",".join(all_key_list),any=",".join(any_key_list))
 
 
 @app.route("/view/<link>", methods=['GET','POST'])
@@ -390,7 +533,6 @@ def upload_resumes():
 @app.route("/cardview",methods=['GET'])
 def cardview():
     return render_template('detail.html')
-
 
 if __name__ == '__main__':
     app.run(debug=True)

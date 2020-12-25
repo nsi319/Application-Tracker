@@ -1,0 +1,8 @@
+assets/
+all_resumes/
+uploads/
+venv
+node_modules/
+.vscode
+__pycache__/
+utils/*.md5
