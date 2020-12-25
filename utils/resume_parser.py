@@ -466,21 +466,21 @@ def get_numbers(text):
     return re.findall('\d*\.?\d+',text)
 
 def check_any(cand,any_l):
-    fdist = nltk.FreqDist()
-    fdist = get_freq(str(cand.complete_resume).lower())
+    # fdist = nltk.FreqDist()
+    # fdist = get_freq(str(cand.complete_resume).lower())
     if any_l==['']:
         return 1
-    if any(word.lower() in fdist.keys() for word in any_l):
+    if any(word.lower() in str(cand.complete_resume).lower() for word in any_l):
         return 1
     else:
         return 0
 
 def check_all(cand,all_l):
-    fdist = nltk.FreqDist()
-    fdist = get_freq(str(cand.complete_resume).lower())
+    # fdist = nltk.FreqDist()
+    # fdist = get_freq(str(cand.complete_resume).lower())
     if all_l==['']:
         return 1
-    if all(word.lower() in fdist.keys() for word in all_l):
+    if all(word.lower() in str(cand.complete_resume).lower() for word in all_l):
         return 1
     else:
         return 0
