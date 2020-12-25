@@ -11,6 +11,8 @@ import numpy as np
 from nltk.stem import WordNetLemmatizer
 import string
 import shutil
+import tika
+tika.initVM()
 
 from tika import parser
 from subprocess import Popen, PIPE
