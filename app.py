@@ -499,6 +499,7 @@ def view(link):
     from models import Candidate
     all_res = "all_resumes"
     path_res = os.path.abspath(all_res)
+    print(path_res)
     cand = Candidate.query.filter_by(resume=path_res + "/" + link).first()
     print(link)
     if cand.skills:
